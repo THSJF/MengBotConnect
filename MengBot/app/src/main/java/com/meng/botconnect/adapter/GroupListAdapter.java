@@ -34,26 +34,26 @@ public class GroupListAdapter extends BaseAdapter {
 	public View getView(final int position, View convertView, ViewGroup parent) {
 		final ViewHolder holder;
 		if (convertView == null) {
-			convertView = context.getActivity().getLayoutInflater().inflate(R.layout.group_list, null);
+			convertView = context.getActivity().getLayoutInflater().inflate(R.layout.group_list_item, null);
 			holder = new ViewHolder();
-			holder.imageViewQQHead = (ImageView) convertView.findViewById(R.id.group_listImageView);
-			holder.textViewName = (TextView) convertView.findViewById(R.id.group_listTextView);
+			holder.imageViewQQHead = (ImageView) convertView.findViewById(R.id.group_list_itemImageView);
+			holder.textViewName = (TextView) convertView.findViewById(R.id.group_list_itemTextView);
 			convertView.setTag(holder);
 		} else {
 			holder = (ViewHolder) convertView.getTag();
 		}
 		final Group group=infosList.get(position);
-		holder.textViewName.setText(group.getName());
-		File qqImageFile = new File(MainActivity2.mainFolder + "user/" + group.getId() + ".jpg");
+		holder.textViewName.setText(group.name);
+		File qqImageFile = new File(MainActivity2.mainFolder + "group/" + group.id + ".jpg");
 		if (qqImageFile.exists()) {
 			holder.imageViewQQHead.setImageBitmap(BitmapFactory.decodeFile(qqImageFile.getAbsolutePath()));
 		} else {
-			MainActivity2.instence.threadPool.execute(new DownloadImageRunnable(context, holder.imageViewQQHead, group.getId(), 0));
+			MainActivity2.instence.threadPool.execute(new DownloadImageRunnable(context, holder.imageViewQQHead, group.id, 0));
 		}
 		holder.imageViewQQHead.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					MainActivity2.instence.threadPool.execute(new DownloadImageRunnable(context, holder.imageViewQQHead, group.getId(), 0));
+					MainActivity2.instence.threadPool.execute(new DownloadImageRunnable(context, holder.imageViewQQHead, group.id, 0));
 				}
 			});
 		return convertView;

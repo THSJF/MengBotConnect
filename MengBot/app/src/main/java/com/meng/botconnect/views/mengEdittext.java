@@ -29,11 +29,11 @@ public class mengEdittext extends LinearLayout {
         typedArray.recycle();
     }
 
-    public String getString(){
-        return isEmpty()?et.getHint().toString():et.getText().toString();
+    public String getString() {
+        return isEmpty() ?et.getHint().toString(): et.getText().toString();
     }
 
-    public void setString(String s){
+    public void setString(String s) {
         et.setText(s);
     }
 
@@ -46,9 +46,9 @@ public class mengEdittext extends LinearLayout {
     }
 
     private boolean isEmpty() {
-        if(et.getText().toString()==null||et.getText().toString().trim().length()==0){
+        if (et.getText().toString() == null || et.getText().toString().trim().length() == 0) {
             return true;
-        }else {
+        } else {
             return false;
         }
     }

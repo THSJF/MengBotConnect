@@ -7,7 +7,7 @@
 	android:orientation="horizontal">
 
 	<ImageView
-		android:id="@+id/group_listImageView"
+		android:id="@+id/group_list_itemImageView"
 		android:layout_width="0dp"
 		android:layout_height="wrap_content"
 		android:layout_weight="1"
@@ -17,7 +17,7 @@
 		android:paddingRight="?android:attr/listPreferredItemPaddingRight"/>
 
 	<TextView
-		android:id="@+id/group_listTextView"
+		android:id="@+id/group_list_itemTextView"
 		android:layout_width="0dp"
 		android:layout_height="wrap_content"
 		android:layout_weight="5"

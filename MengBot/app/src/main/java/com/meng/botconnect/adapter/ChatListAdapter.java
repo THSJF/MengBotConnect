@@ -10,11 +10,11 @@ import com.meng.botconnect.network.*;
 import java.io.*;
 import java.util.*;
 
-public class GroupMsgListAdapter extends BaseAdapter {
+public class ChatListAdapter extends BaseAdapter {
 	private Fragment context;
 	private ArrayList<BotMessage> infosList;
 
-	public GroupMsgListAdapter(Fragment context, ArrayList<BotMessage> infosSet) {
+	public ChatListAdapter(Fragment context, ArrayList<BotMessage> infosSet) {
 		this.context = context;
 		this.infosList = infosSet;
 	}
@@ -32,20 +32,20 @@ public class GroupMsgListAdapter extends BaseAdapter {
 	}
 
 	public View getView(final int position, View convertView, ViewGroup parent) {
-
 		final ViewHolder holder;
 		if (convertView == null) {
-			convertView = context.getActivity().getLayoutInflater().inflate(R.layout.msg_list, null);
+			convertView = context.getActivity().getLayoutInflater().inflate(R.layout.chat_list_item, null);
 			holder = new ViewHolder();
-			holder.imageViewQQHead = (ImageView) convertView.findViewById(R.id.msg_listImageView);
-			holder.textViewName = (TextView) convertView.findViewById(R.id.msg_listTextViewUserName);
-			holder.textViewMsg = (TextView) convertView.findViewById(R.id.msg_listTextViewMsg);
+			holder.imageViewQQHead = (ImageView) convertView.findViewById(R.id.chat_list_itemImageView);
+			holder.textViewName = (TextView) convertView.findViewById(R.id.chat_list_itemTextViewUserName);
+			holder.textViewMsg = (TextView) convertView.findViewById(R.id.chat_list_itemTextViewMsg);
 			convertView.setTag(holder);
 		} else {
 			holder = (ViewHolder) convertView.getTag();
 		}
 		final BotMessage msg = infosList.get(position);
-		holder.textViewName.setText(msg.getUserName());
+		String un=msg.getUserName();
+		holder.textViewName.setText(un == null ?msg.getFromQQ() + "": un);
 		holder.textViewMsg.setText(msg.getMsg());
 		File qqImageFile = new File(MainActivity2.mainFolder + "user/" + msg.getFromQQ() + ".jpg");
 		if (qqImageFile.exists()) {

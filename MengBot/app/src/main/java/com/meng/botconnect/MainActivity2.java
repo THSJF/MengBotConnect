@@ -22,33 +22,66 @@ public class MainActivity2 extends Activity {
     private RelativeLayout rt;
     private ActionBarDrawerToggle mDrawerToggle;
     private DrawerArrowDrawable drawerArrow;
-    private MessageFragment messageFragment;
-    private TextFragment aboutFragment;
+    private GroupListFragment messageFragment;
+    private StatusFragment statusFragment;
     private SettingsFragment settingsFragment;
     public TextView rightText;
-
+	public ConcurrentHashMap<Long,ChatFragment> chatFragments=new ConcurrentHashMap<>();
 	public FragmentManager fragmentManager;
 
 	public ExecutorService threadPool = Executors.newFixedThreadPool(5);
 	public static String mainFolder;
 	public static final int SELECT_FILE_REQUEST_CODE = 822;
-	private final String[] menus = new String[]{"群消息", "私聊消息", "讨论组消息", "状态","设置","退出"};
+	private final String[] menus = new String[]{"群消息", "状态","设置","退出"};
 
-    public ArrayList<Group> groupList=new ArrayList<>();
-
+	public BotData botData=new BotData();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
         instence = this;
 		mainFolder = Environment.getExternalStorageDirectory() + "/Pictures/grzx/";
-        setActionBar();
+		ActionBar ab = getActionBar();
+        ab.setDisplayHomeAsUpEnabled(true);
+        ab.setHomeButtonEnabled(true);
         findViews();
         rightText.setText(logString);
-        initFragment();
+        fragmentManager = getFragmentManager();
         setListener();
         changeTheme();
+		Member m=new Member();
+		m.setNick("Kagiyama Hina");
+		addGroupMember(1023432971L, 2856986197L, m);
+		for (int i=0;i < 10;++i) {
+			addMsg(1023432971L, 2856986197L, "gg");
+			addMsg(1023432971L, 1620628713L, "ok");
+			addMsg(1023432971L, 2528419891L, "good morning");
+			addMsg(1023432971L, 2565128043L, "~thunder!");
+			addMsg(431483450L, 2856986197L, "此生无悔入东方");
+			addMsg(431483450L, 2528419891L, "来世愿生幻想乡");
+			addMsg(431483450L, 1594703250L, "-发言数据");
+			addMsg(431483450L, 2528419891L, "你群没有发言");
+		}
     }
+
+	public void addMsg(long group, long qq, String msg) {
+		BotMessage bm=new BotMessage(1, group, qq, msg, new Random().nextInt());
+		Group g=botData.getGroup(group);
+		if (g == null) {
+			g = new Group(group, "群" + group);
+			botData.groupList.add(g);
+		}
+		g.messageList.add(bm);
+	}
+
+	public void addGroupMember(long group, long qq, Member m) {
+		Group g=botData.getGroup(group);
+		if (g == null) {
+			g = new Group(group, "群" + group);
+			botData.groupList.add(g);
+		}
+		g.memberSet.put(qq, m);
+	}
 
 	public void selectImage(Fragment f) {
         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
@@ -68,7 +101,7 @@ public class MainActivity2 extends Activity {
         if (getIntent().getBooleanExtra("setTheme", false)) {
             initSettingsFragment(true);
         } else {
-            initWelcome(true);
+            initGroupList(true);
             if (MainActivity.sharedPreference.getBoolean("opendraw", true)) {
                 mDrawerLayout.openDrawer(lvDrawer);
             }
@@ -82,12 +115,6 @@ public class MainActivity2 extends Activity {
         } else {
             super.setTheme(R.style.AppThemeDark);
         }
-    }
-
-    private void setActionBar() {
-        ActionBar ab = getActionBar();
-        ab.setDisplayHomeAsUpEnabled(true);
-        ab.setHomeButtonEnabled(true);
     }
 
     private void setListener() {
@@ -125,13 +152,10 @@ public class MainActivity2 extends Activity {
 					LogTool.i(MainActivity2.this, menus[p3]);
 					switch (menus[p3]) {
 						case "群消息":
-							initWelcome(true);
-							break;
-						case "私聊消息":
-							break;
-						case "讨论组消息":
+							initGroupList(true);
 							break;
 						case "状态":
+							initStatusFragment(true);
 							break;
 						case "设置":
 							initSettingsFragment(true);
@@ -154,23 +178,13 @@ public class MainActivity2 extends Activity {
         rt = (RelativeLayout) findViewById(R.id.right_drawer);
         rightText = (TextView) findViewById(R.id.main_activityTextViewRight);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        lvDrawer = (ExpandableListView) findViewById(R.id.navdrawer);
+        lvDrawer = (ListView) findViewById(R.id.navdrawer);
     }
 
-    private void initFragment() {
-        fragmentManager = getFragmentManager();
-        if (MainActivity.sharedPreference.getBoolean("textFragment")) {
-            initAboutFragment(false);
-        }
-        if (MainActivity.sharedPreference.getBoolean("settings")) {
-            initSettingsFragment(false);
-        }
-    }
-
-    private void initWelcome(boolean showNow) {
+    private void initGroupList(boolean showNow) {
         FragmentTransaction transactionWelcome = fragmentManager.beginTransaction();
         if (messageFragment == null) {
-            messageFragment = new MessageFragment();
+            messageFragment = new GroupListFragment();
             transactionWelcome.add(R.id.main_activityLinearLayout, messageFragment);
         }
         hideFragment(transactionWelcome);
@@ -180,15 +194,15 @@ public class MainActivity2 extends Activity {
         transactionWelcome.commit();
     }
 
-    private void initAboutFragment(boolean showNow) {
+    private void initStatusFragment(boolean showNow) {
         FragmentTransaction transactionAboutFragment = fragmentManager.beginTransaction();
-        if (aboutFragment == null) {
-            aboutFragment = new TextFragment(1);
-            transactionAboutFragment.add(R.id.main_activityLinearLayout, aboutFragment);
+        if (statusFragment == null) {
+            statusFragment = new StatusFragment();
+            transactionAboutFragment.add(R.id.main_activityLinearLayout, statusFragment);
         }
         hideFragment(transactionAboutFragment);
         if (showNow) {
-            transactionAboutFragment.show(aboutFragment);
+            transactionAboutFragment.show(statusFragment);
         }
         transactionAboutFragment.commit();
     }
@@ -209,13 +223,16 @@ public class MainActivity2 extends Activity {
     public void hideFragment(FragmentTransaction transaction) {
         Fragment fs[] = {
 			messageFragment,
-			aboutFragment,
+			statusFragment,
 			settingsFragment
         };
         for (Fragment f : fs) {
             if (f != null) {
                 transaction.hide(f);
             }
+        }
+		for (Fragment f : chatFragments.values()) {
+			transaction.hide(f);
         }
     }
 

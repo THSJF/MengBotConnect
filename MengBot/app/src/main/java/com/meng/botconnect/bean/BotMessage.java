@@ -3,13 +3,13 @@ package com.meng.botconnect.bean;
 import com.meng.botconnect.*;
 
 public class BotMessage {
-	private byte type=-1;
+	private int type=-1;
 	private long group;
 	private long fromQQ;
 	private String msg=null;
 	private int msgId=-1;
 
-	public BotMessage(byte type, long group, long fromQQ, String msg, int msgId) {
+	public BotMessage(int type, long group, long fromQQ, String msg, int msgId) {
 		this.type = type;
 		this.group = group;
 		this.fromQQ = fromQQ;
@@ -18,16 +18,11 @@ public class BotMessage {
 	}
 
 	public String getUserName() {
-		for (Group g:MainActivity2.instence.groupList) {
-			if (g.getId() == group) {
-				Member m = g.getMenberByQQ(fromQQ);
-				if (m == null) {
-					return null;
-				}
-				return m.getNick();
-			}
+		Member m=MainActivity2.instence.botData.getGroupMember(group, fromQQ);
+		if (m == null) {
+			return null;
 		}
-		return null;
+		return m.getNick();
 	}
 
 	public int getMsgId() {
@@ -46,7 +41,7 @@ public class BotMessage {
 		return group;
 	}
 
-	public byte getType() {
+	public int getType() {
 		return type;
 	}
 }

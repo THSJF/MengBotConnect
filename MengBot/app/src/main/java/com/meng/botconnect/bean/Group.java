@@ -1,12 +1,14 @@
 package com.meng.botconnect.bean;
 
 import java.util.*;
+import java.util.concurrent.*;
 
 public class Group {
 
-    private long id;
-    private String name;
-	private HashSet<Member> memberSet=new HashSet<>();
+    public long id;
+    public String name;
+	public ConcurrentHashMap<Long,Member> memberSet=new ConcurrentHashMap<>();
+	public ArrayList<BotMessage> messageList=new ArrayList<>();
 
     public Group() {
     }
@@ -16,34 +18,9 @@ public class Group {
         this.name = name;
     }
 
-	public void addMember(Member m) {
-		memberSet.add(m);
-	}
-
 	public Member getMenberByQQ(long qq) {
-		for (Member m:memberSet) {
-			if (m.getQqId() == qq) {
-				return m;
-			}
-		}
-		return null;
+		return memberSet.get(qq);
 	}
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 
     @Override
     public String toString() {

@@ -6,7 +6,7 @@
 	android:orientation="horizontal">
 
 	<ImageView
-		android:id="@+id/msg_listImageView"
+		android:id="@+id/chat_list_itemImageView"
 		android:layout_width="60dp"
 		android:layout_height="60dp"
 		android:layout_gravity="center"
@@ -20,14 +20,14 @@
 		android:layout_weight="8">
 
 		<TextView
-			android:id="@+id/msg_listTextViewUserName"
+			android:id="@+id/chat_list_itemTextViewUserName"
 			android:layout_width="fill_parent"
 			android:layout_height="wrap_content"
 			android:layout_gravity="top"
 			android:textAppearance="?android:attr/textAppearanceListItemSmall"/>
 
 		<TextView
-			android:id="@+id/msg_listTextViewMsg"
+			android:id="@+id/chat_list_itemTextViewMsg"
 			android:layout_width="fill_parent"
 			android:layout_height="wrap_content"
 			android:layout_gravity="bottom"

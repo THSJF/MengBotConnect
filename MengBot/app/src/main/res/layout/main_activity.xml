@@ -15,19 +15,18 @@
             android:gravity="bottom">
 
             <ImageView
+				android:visibility="gone"
                 android:layout_width="36dip"
                 android:layout_height="36dip"
                 android:paddingLeft="10dip"
-                android:src="@drawable/ic_launcher"
-                android:visibility="gone" />
+                android:src="@drawable/ic_launcher" />
 
         </RelativeLayout>
 
         <FrameLayout
             android:id="@+id/main_activityLinearLayout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical" />
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" />
 
     </LinearLayout>
     <!-- The navigation drawer -->

@@ -6,26 +6,28 @@
 	android:orientation="vertical">
 
 	<ListView
-		android:id="@+id/msg_viewListView"
+		android:id="@+id/chat_viewListView"
 		android:layout_width="fill_parent"
 		android:layout_height="0dp"
 		android:layout_weight="10"/>
 
 	<LinearLayout
+		android:layout_gravity="bottom"
 		android:orientation="horizontal"
 		android:layout_width="fill_parent"
 		android:layout_height="0dp"
 		android:layout_weight="1">
 
 		<EditText
-			android:id="@+id/msg_viewEditText"
+			android:id="@+id/chat_viewEditText"
 			android:layout_weight="5"
 			android:layout_width="0dp"
 			android:layout_height="wrap_content"/>
 
 		<ImageButton
-			android:id="@+id/msg_viewImageButton"
-			android:src="@drawable/ic_launcher"
+			android:background="@null"
+			android:id="@+id/chat_viewImageButton"
+			android:src="@android:drawable/ic_menu_send"
 			android:layout_weight="1"
 			android:layout_width="0dp"
 			android:layout_height="wrap_content"
