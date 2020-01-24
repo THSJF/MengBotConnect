@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="mengViews">
+        <attr name="textviewText" format="string" />
+        <attr name="edittextHint" format="string" />
+    </declare-styleable>
+</resources>
