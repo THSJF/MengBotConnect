@@ -8,9 +8,9 @@ public class BotMessage {
 	private long group;
 	private long fromQQ;
 	private String msg=null;
-	private int msgId=-1;
+	private long msgId=-1;
 
-	public BotMessage(int type, long group, long fromQQ, String msg, int msgId) {
+	public BotMessage(int type, long group, long fromQQ, String msg, long msgId) {
 		this.type = type;
 		this.group = group;
 		this.fromQQ = fromQQ;
@@ -31,7 +31,7 @@ public class BotMessage {
 		return m.getNick();
 	}
 
-	public int getMsgId() {
+	public long getMsgId() {
 		return msgId;
 	}
 

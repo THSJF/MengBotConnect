@@ -1,6 +1,8 @@
 package com.meng.botconnect.fragment;
 
 import android.app.*;
+import android.graphics.*;
+import android.graphics.drawable.*;
 import android.os.*;
 import android.view.*;
 import android.widget.*;
@@ -20,7 +22,7 @@ public class GroupListFragment extends Fragment {
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-		lv=(ListView) view.findViewById(R.id.groups_listListView);
+		lv = (ListView) view.findViewById(R.id.groups_listListView);
 		lv.setAdapter(new GroupListAdapter(this, MainActivity2.instence.botData.groupList));
 		lv.setOnItemClickListener(new OnItemClickListener(){
 
@@ -37,6 +39,17 @@ public class GroupListFragment extends Fragment {
 					MainActivity2.instence.hideFragment(transaction);
 					transaction.show(cf);
 					transaction.commit();
+					switch (cf.getAuth()) {
+						case 1:
+							MainActivity2.instence.ab.setBackgroundDrawable(new ColorDrawable(Color.GRAY));
+							break;
+						case 2:
+							MainActivity2.instence.ab.setBackgroundDrawable(new ColorDrawable(Color.GREEN));
+							break;
+						case 3:
+							MainActivity2.instence.ab.setBackgroundDrawable(new ColorDrawable(Color.YELLOW));
+							break;
+					}
 				}
 			});
 	}

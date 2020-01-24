@@ -6,15 +6,25 @@ import com.meng.botconnect.*;
 
 public class LogTool {
 
-    public static void e(final Activity a, final Object o) {
+	public static String getExceptionAllinformation(Exception ex){
+        StringBuilder sOut = new StringBuilder();
+        sOut.append(ex.getMessage() + "\r\n");
+        StackTraceElement[] trace = ex.getStackTrace();
+        for (StackTraceElement s : trace) {
+            sOut.append("\tat " + s + "\r\n");
+        }
+        return sOut.toString();
+    }
+	
+    public static void e(final Activity a, final Exception o) {
         a.runOnUiThread(new Runnable() {
 
 				@Override
 				public void run() {
 					// TODO: Implement this method
 					Toast.makeText(a, "发生错误:" + o.toString(), Toast.LENGTH_SHORT).show();
-					i(a, "发生错误:" + o.toString());
-				}
+						i(a, "发生错误:" +getExceptionAllinformation(o));
+					}
 			});
     }
 

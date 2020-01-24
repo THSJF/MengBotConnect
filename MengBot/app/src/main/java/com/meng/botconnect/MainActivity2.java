@@ -21,6 +21,8 @@ import java.util.concurrent.*;
 
 import com.meng.botconnect.bean.Member;
 import com.google.gson.*;
+import android.graphics.drawable.*;
+import android.graphics.*;
 
 public class MainActivity2 extends Activity {
 	public static long onLoginQQ = 2528419891L;
@@ -43,7 +45,7 @@ public class MainActivity2 extends Activity {
 	public static String mainFolder;
 	public static final int SELECT_FILE_REQUEST_CODE = 822;
 	private final String[] menus = new String[]{"群消息", "状态","设置","退出"};
-
+	public ActionBar ab;
 	public BotData botData=new BotData();
 	private File botDataFile;
 	public Gson gson;
@@ -54,10 +56,10 @@ public class MainActivity2 extends Activity {
         setContentView(R.layout.main_activity);
         instence = this;
 		mainFolder = Environment.getExternalStorageDirectory() + "/Pictures/grzx/";
-		ActionBar ab = getActionBar();
+		ab = getActionBar();
         ab.setDisplayHomeAsUpEnabled(true);
         ab.setHomeButtonEnabled(true);
-        findViews();
+		findViews();
         rightText.setText(logString);
         fragmentManager = getFragmentManager();
         setListener();
@@ -75,7 +77,7 @@ public class MainActivity2 extends Activity {
 		try {
 			cq = new CoolQ();
 		} catch (Exception e) {
-			LogTool.e(this, e.toString());
+			LogTool.e(this, e);
 		}
 		cq.connect();
 		threadPool.execute(new Runnable(){

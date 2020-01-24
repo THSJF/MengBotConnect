@@ -34,6 +34,8 @@ public class CoolQ extends WebSocketClient {
 	public void onOpen(ServerHandshake serverHandshake) {
 		LogTool.t(MainActivity2.instence, "连接到苗");
 		send(BotDataPack.encode(BotDataPack.getConfig));
+		//MainActivity2.onLoginQQ = getLoginQQ();
+		//MainActivity2.onLoginNick = getLoginNick();
 		MainActivity2.instence.threadPool.execute(new Runnable(){
 
 				@Override
@@ -81,11 +83,14 @@ public class CoolQ extends WebSocketClient {
 	}
 
 	private BotDataPack getTaskResult(int opCode) {
-		int time=5000;
+		int time=18000;
 		while (resultMap.get(opCode) == null && time-- > 0) {
 			try {
 				Thread.sleep(1);
 			} catch (InterruptedException e) {}
+		}
+		if(time<1){
+			LogTool.t(MainActivity2.instence,"timt out");
 		}
 		BotDataPack tr=resultMap.get(opCode);
 		resultMap.remove(opCode);
@@ -220,22 +225,31 @@ public class CoolQ extends WebSocketClient {
 		} else {
 			LogTool.t(MainActivity2.instence, "获取member成功" + qqId);
 		}
-		return new Member(
-			recData.readLong(),
-			recData.readLong(),
-			recData.readString(),
-			recData.readString(),
-			recData.readInt(),
-			recData.readInt(),
-			recData.readString(),
-			new Date(recData.readLong()),
-			new Date(recData.readLong()),
-			recData.readString(),
-			recData.readInt(),
-			recData.readString(),
-			new Date(recData.readLong()),
-			recData.readBoolean(),
-			recData.readBoolean());
+		Member m =null;
+		try{m=new Member(
+				recData.readLong(),
+				recData.readLong(),
+				recData.readString(),
+				recData.readString(),
+				recData.readInt(),
+				recData.readInt(),
+				recData.readString(),
+				new Date(recData.readLong()),
+				new Date(recData.readLong()),
+				recData.readString(),
+				recData.readInt(),
+				recData.readString(),
+				new Date(recData.readLong()),
+				recData.readBoolean(),
+				recData.readBoolean());
+			
+		}catch(Exception e){
+			LogTool.t(MainActivity2.instence, "获取member失败" + qqId);
+		}
+			if(m==null){
+				LogTool.t(MainActivity2.instence, "获取member失败" + qqId);
+			}
+			return m;
     }
 
 	public Group getGroupInfo(long groupId) {
