@@ -1,6 +1,7 @@
 package com.meng.botconnect.bean;
 
 import com.meng.botconnect.*;
+import com.meng.botconnect.lib.*;
 import java.util.*;
 import java.util.concurrent.*;
 
@@ -22,7 +23,7 @@ public class Group {
 	public void addMember(Member mToAdd) {
 		for (Member m:memberSet.values()) {
 			if (m.getQqId() == mToAdd.getQqId()) {
-				m = mToAdd;
+				memberSet.put(m.getQqId(),mToAdd);
 				return;
 			}
 		}

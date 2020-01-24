@@ -45,6 +45,18 @@ public class ChatListAdapter extends BaseAdapter {
 		}
 		final BotMessage msg = infosList.get(position);
 		String un=msg.getUserName();
+		RanConfigBean rcf=MainActivity2.instence.botData.ranConfig;
+		if (rcf.adminList.contains(msg.getFromQQ())) {
+			holder.textViewName.setTextColor(Color.MAGENTA);
+		} else if (rcf.masterList.contains(msg.getFromQQ())) {
+			holder.textViewName.setTextColor(Color.GREEN);
+		} else {
+			if (MainActivity.sharedPreference.getBoolean("useLightTheme", true)) {
+				holder.textViewName.setTextColor(Color.BLACK);
+			} else {
+				holder.textViewName.setTextColor(Color.WHITE);
+			}
+		}
 		holder.textViewName.setText(un == null ?msg.getFromQQ() + "": un);
 		holder.textViewMsg.setText(msg.getMsg());
 		File qqImageFile = new File(MainActivity2.mainFolder + "user/" + msg.getFromQQ() + ".jpg");

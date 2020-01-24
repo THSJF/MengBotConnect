@@ -8,16 +8,23 @@ import android.support.v4.widget.*;
 import android.view.*;
 import android.widget.*;
 import android.widget.AdapterView.*;
+import com.google.gson.reflect.*;
 import com.meng.botconnect.bean.*;
 import com.meng.botconnect.fragment.*;
 import com.meng.botconnect.lib.*;
 import com.meng.botconnect.network.*;
-import java.net.*;
+import java.io.*;
+import java.lang.reflect.*;
+import java.nio.charset.*;
 import java.util.*;
 import java.util.concurrent.*;
 
+import com.meng.botconnect.bean.Member;
+import com.google.gson.*;
+
 public class MainActivity2 extends Activity {
-	public static long onLoginQQ = 1620628713L;
+	public static long onLoginQQ = 2528419891L;
+	public static String onLoginNick="Sanae";
     public static MainActivity2 instence;
     private final String logString = "以下为操作记录：\n";
     private DrawerLayout mDrawerLayout;
@@ -38,6 +45,9 @@ public class MainActivity2 extends Activity {
 	private final String[] menus = new String[]{"群消息", "状态","设置","退出"};
 
 	public BotData botData=new BotData();
+	private File botDataFile;
+	public Gson gson;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,12 +62,34 @@ public class MainActivity2 extends Activity {
         fragmentManager = getFragmentManager();
         setListener();
         changeTheme();
+		GsonBuilder gb = new GsonBuilder();
+		gb.setLongSerializationPolicy(LongSerializationPolicy.STRING);
+		gson = gb.create();
+		Type type = new TypeToken<BotData>() {
+		}.getType();
+		botDataFile = new File(Environment.getExternalStorageDirectory() + "/SanaeConfig.json");
+		if (!botDataFile.exists()) {
+			saveSanaeConfig();
+		}
+        botData = gson.fromJson(Tools.FileTool.readString(botDataFile), type);
 		try {
 			cq = new CoolQ();
 		} catch (Exception e) {
 			LogTool.e(this, e.toString());
 		}
 		cq.connect();
+		threadPool.execute(new Runnable(){
+
+				@Override
+				public void run() {
+					while (true) {
+						try {
+							Thread.sleep(10000);
+						} catch (InterruptedException e) {}
+						saveSanaeConfig();
+					}
+				}
+			});
     }
 	public void addMsg(final BotMessage bm) {
 		runOnUiThread(new Runnable(){
@@ -259,6 +291,18 @@ public class MainActivity2 extends Activity {
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         mDrawerToggle.onConfigurationChanged(newConfig);
+    }
+
+	public void saveSanaeConfig() {
+        try {
+            FileOutputStream fos = new FileOutputStream(botDataFile);
+            OutputStreamWriter writer = new OutputStreamWriter(fos, StandardCharsets.UTF_8);
+            writer.write(gson.toJson(botData));
+            writer.flush();
+            fos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

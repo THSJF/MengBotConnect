@@ -50,6 +50,9 @@ public class BotDataPack {
 	public static final int onGroupMsg = 25;
 	public static final int opGroupInfo = 26;
 
+	public static final int getConfig = 27;
+	
+	
 	public static BotDataPack encode(int opCode) {
 		return new BotDataPack(opCode);
 	}

@@ -1,6 +1,7 @@
 package com.meng.botconnect.bean;
 
 import com.meng.botconnect.*;
+import com.meng.botconnect.lib.*;
 
 public class BotMessage {
 	private int type=-1;
@@ -18,6 +19,11 @@ public class BotMessage {
 	}
 
 	public String getUserName() {
+		String nick=null;
+		nick = MainActivity2.instence.botData.ranConfig.getNickName(group, fromQQ);
+		if (nick != null) {
+			return nick;
+		}
 		Member m=MainActivity2.instence.botData.getGroupMember(group, fromQQ);
 		if (m == null) {
 			return null;

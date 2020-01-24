@@ -38,6 +38,7 @@ public class ChatFragment extends Fragment {
 				@Override
 				public void onClick(View p1) {
 					LogTool.t(getActivity(), et.getText().toString());
+					MainActivity2.instence.cq.sendGroupMsg(group.id,et.getText().toString());
 				}
 			});
 	}
