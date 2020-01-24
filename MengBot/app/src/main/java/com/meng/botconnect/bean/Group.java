@@ -1,5 +1,6 @@
 package com.meng.botconnect.bean;
 
+import com.meng.botconnect.*;
 import java.util.*;
 import java.util.concurrent.*;
 
@@ -18,8 +19,32 @@ public class Group {
         this.name = name;
     }
 
-	public Member getMenberByQQ(long qq) {
-		return memberSet.get(qq);
+	public void addMember(Member mToAdd) {
+		for (Member m:memberSet.values()) {
+			if (m.getQqId() == mToAdd.getQqId()) {
+				m = mToAdd;
+				return;
+			}
+		}
+		memberSet.put(mToAdd.getQqId(), mToAdd);
+	}
+
+	public Member getMenberByQQ(final long qq) {
+		Member m=memberSet.get(qq);
+		if (m == null) {
+			m = new Member();
+			m.setQqId(qq);
+			m.setNick("" + qq);
+			memberSet.put(qq, m);
+			MainActivity2.instence.threadPool.execute(new Runnable(){
+
+					@Override
+					public void run() {
+						addMember(MainActivity2.instence.cq.getGroupMemberInfo(id, qq));
+					}
+				});
+		}
+		return m;
 	}
 
     @Override

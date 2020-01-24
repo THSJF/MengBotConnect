@@ -40,11 +40,12 @@ public class ExceptionCatcher implements Thread.UncaughtExceptionHandler {
         if (!handleException(ex) && mDefaultHandler != null) {
             mDefaultHandler.uncaughtException(thread, ex);
         } else {
-            try {
+			saveCrashInfo2File(ex);
+            /*try {
                 Thread.sleep(3000);
             } catch (InterruptedException e) {
             }
-            System.exit(0);
+            System.exit(0);*/
         }
     }
 
@@ -52,6 +53,9 @@ public class ExceptionCatcher implements Thread.UncaughtExceptionHandler {
         if (ex == null) {
             return false;
         }
+		if(ex instanceof RuntimeException){
+			return true;
+		}
         collectDeviceInfo(mContext);
         addCustomInfo();
         new Thread() {
@@ -62,7 +66,7 @@ public class ExceptionCatcher implements Thread.UncaughtExceptionHandler {
                 Looper.loop();
             }
         }.start();
-        saveCrashInfo2File(ex);
+     //   saveCrashInfo2File(ex);
         return true;
     }
 

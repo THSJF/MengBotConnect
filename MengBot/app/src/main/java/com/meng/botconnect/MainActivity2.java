@@ -11,10 +11,13 @@ import android.widget.AdapterView.*;
 import com.meng.botconnect.bean.*;
 import com.meng.botconnect.fragment.*;
 import com.meng.botconnect.lib.*;
+import com.meng.botconnect.network.*;
+import java.net.*;
 import java.util.*;
 import java.util.concurrent.*;
 
 public class MainActivity2 extends Activity {
+	public static long onLoginQQ = 1620628713L;
     public static MainActivity2 instence;
     private final String logString = "以下为操作记录：\n";
     private DrawerLayout mDrawerLayout;
@@ -28,8 +31,8 @@ public class MainActivity2 extends Activity {
     public TextView rightText;
 	public ConcurrentHashMap<Long,ChatFragment> chatFragments=new ConcurrentHashMap<>();
 	public FragmentManager fragmentManager;
-
-	public ExecutorService threadPool = Executors.newFixedThreadPool(5);
+	public CoolQ cq;
+	public ExecutorService threadPool = Executors.newCachedThreadPool();
 	public static String mainFolder;
 	public static final int SELECT_FILE_REQUEST_CODE = 822;
 	private final String[] menus = new String[]{"群消息", "状态","设置","退出"};
@@ -49,37 +52,35 @@ public class MainActivity2 extends Activity {
         fragmentManager = getFragmentManager();
         setListener();
         changeTheme();
-		Member m=new Member();
-		m.setNick("Kagiyama Hina");
-		addGroupMember(1023432971L, 2856986197L, m);
-		for (int i=0;i < 10;++i) {
-			addMsg(1023432971L, 2856986197L, "gg");
-			addMsg(1023432971L, 1620628713L, "ok");
-			addMsg(1023432971L, 2528419891L, "good morning");
-			addMsg(1023432971L, 2565128043L, "~thunder!");
-			addMsg(431483450L, 2856986197L, "此生无悔入东方");
-			addMsg(431483450L, 2528419891L, "来世愿生幻想乡");
-			addMsg(431483450L, 1594703250L, "-发言数据");
-			addMsg(431483450L, 2528419891L, "你群没有发言");
+		try {
+			cq = new CoolQ();
+		} catch (Exception e) {
+			LogTool.e(this, e.toString());
 		}
+		cq.connect();
     }
+	public void addMsg(final BotMessage bm) {
+		runOnUiThread(new Runnable(){
 
-	public void addMsg(long group, long qq, String msg) {
-		BotMessage bm=new BotMessage(1, group, qq, msg, new Random().nextInt());
-		Group g=botData.getGroup(group);
-		if (g == null) {
-			g = new Group(group, "群" + group);
-			botData.groupList.add(g);
-		}
-		g.messageList.add(bm);
+				@Override
+				public void run() {
+					Group g=botData.getGroup(bm.getGroup());
+					g.messageList.add(bm);
+					((BaseAdapter) messageFragment.lv.getAdapter()).notifyDataSetChanged();
+					ChatFragment cf=chatFragments.get(bm.getGroup());
+					if (cf == null) {
+						return;
+					}
+					((BaseAdapter)cf.lv.getAdapter()).notifyDataSetChanged();
+				}
+			});
+	}
+	public void addMsg(final long group, final long qq, final String msg) {
+		addMsg(new BotMessage(1, group, qq, msg, new Random().nextInt()));
 	}
 
 	public void addGroupMember(long group, long qq, Member m) {
 		Group g=botData.getGroup(group);
-		if (g == null) {
-			g = new Group(group, "群" + group);
-			botData.groupList.add(g);
-		}
 		g.memberSet.put(qq, m);
 	}
 

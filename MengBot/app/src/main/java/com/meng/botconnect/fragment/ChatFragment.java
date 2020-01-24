@@ -13,7 +13,7 @@ import com.meng.botconnect.lib.*;
 public class ChatFragment extends Fragment {
 
 	private Group group;
-	private ListView lv;
+	public ListView lv;
 	private EditText et;
 	private ImageButton ib;
 	public ChatFragment(Group g) {
@@ -28,7 +28,6 @@ public class ChatFragment extends Fragment {
 
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
-		// TODO: Implement this method
 		super.onViewCreated(view, savedInstanceState);
 		lv = (ListView) view.findViewById(R.id.chat_viewListView);
 		et = (EditText) view.findViewById(R.id.chat_viewEditText);

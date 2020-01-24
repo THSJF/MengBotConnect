@@ -11,6 +11,7 @@ import com.meng.botconnect.bean.*;
 
 public class GroupListFragment extends Fragment {
 
+	public ListView lv;
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		return inflater.inflate(R.layout.groups_list, container, false);
@@ -19,7 +20,7 @@ public class GroupListFragment extends Fragment {
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-		ListView lv=(ListView) view.findViewById(R.id.groups_listListView);
+		lv=(ListView) view.findViewById(R.id.groups_listListView);
 		lv.setAdapter(new GroupListAdapter(this, MainActivity2.instence.botData.groupList));
 		lv.setOnItemClickListener(new OnItemClickListener(){
 
