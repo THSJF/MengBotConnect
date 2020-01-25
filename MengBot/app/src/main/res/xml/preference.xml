@@ -8,15 +8,15 @@
         android:key="exitsettings"
         android:summary="System.exit(0)可以彻底关闭软件"
         android:title="使用System.exit(0)代替finish()" />
-    <PreferenceScreen
-        android:summary="可以避免第一次点击标签页时的卡顿"
-        android:title="启动时要加载的项目">
-        <CheckBoxPreference
-            android:key="settings"
-            android:title="设置" />
-    </PreferenceScreen>
-
-    <CheckBoxPreference
+    <EditTextPreference
+        android:dialogTitle="ip"
+        android:key="ip"
+        android:title="ip" />
+    <EditTextPreference
+        android:dialogTitle="端口"
+        android:key="port"
+        android:title="端口" />
+	<CheckBoxPreference
         android:defaultValue="true"
         android:key="useLightTheme"
         android:summaryOff="晚上迫害不瞎眼"

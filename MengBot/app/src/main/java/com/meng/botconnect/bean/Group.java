@@ -23,7 +23,7 @@ public class Group {
 	public void addMember(Member mToAdd) {
 		for (Member m:memberSet.values()) {
 			if (m.getQqId() == mToAdd.getQqId()) {
-				memberSet.put(m.getQqId(),mToAdd);
+				memberSet.put(m.getQqId(), mToAdd);
 				return;
 			}
 		}
@@ -41,7 +41,10 @@ public class Group {
 
 					@Override
 					public void run() {
-						addMember(MainActivity2.instence.cq.getGroupMemberInfo(id, qq));
+						Member m=MainActivity2.instence.cq.getGroupMemberInfo(id, qq);
+						if (m != null) {
+							addMember(m);
+						}
 					}
 				});
 		}

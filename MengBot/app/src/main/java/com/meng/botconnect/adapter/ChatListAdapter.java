@@ -9,6 +9,7 @@ import com.meng.botconnect.bean.*;
 import com.meng.botconnect.network.*;
 import java.io.*;
 import java.util.*;
+import com.meng.botconnect.lib.*;
 
 public class ChatListAdapter extends BaseAdapter {
 	private Fragment context;

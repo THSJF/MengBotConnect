@@ -7,7 +7,6 @@ import java.lang.reflect.*;
 import java.net.*;
 import java.nio.*;
 import java.util.*;
-import java.util.concurrent.*;
 import org.java_websocket.client.*;
 import org.java_websocket.exceptions.*;
 import org.java_websocket.handshake.*;
@@ -16,9 +15,11 @@ import com.meng.botconnect.bean.Member;
 
 
 public class CoolQ extends WebSocketClient {
-	private ConcurrentHashMap<Integer,BotDataPack> resultMap=new ConcurrentHashMap<>();
+	private HashMap<Integer,BotDataPack> resultMap=new HashMap<>();
+	public static String ip=null;
+	public static String port=null;
 	public CoolQ() throws Exception {
-		super(new URI("ws://123.207.65.93:7777"));
+		super(new URI(String.format("ws://%s:%s", ip, port)));
 	}
 
 	@Override
@@ -83,14 +84,14 @@ public class CoolQ extends WebSocketClient {
 	}
 
 	private BotDataPack getTaskResult(int opCode) {
-		int time=18000;
+		int time=10000;
 		while (resultMap.get(opCode) == null && time-- > 0) {
 			try {
 				Thread.sleep(1);
 			} catch (InterruptedException e) {}
 		}
-		if(time<1){
-			LogTool.t(MainActivity2.instence,"timt out");
+		if (time < 1) {
+			LogTool.t(MainActivity2.instence, "time out");
 		}
 		BotDataPack tr=resultMap.get(opCode);
 		resultMap.remove(opCode);
@@ -211,62 +212,33 @@ public class CoolQ extends WebSocketClient {
 		BotDataPack bdp=BotDataPack.encode(BotDataPack.opGroupMemberInfo);
 		bdp.write(groupId).write(qqId);
 		send(bdp);
-		LogTool.t(MainActivity2.instence, "获取member" + qqId);
 		BotDataPack recData=getTaskResult(BotDataPack.opGroupMemberInfo);
 		if (recData == null) {
 			MainActivity2.instence.threadPool.execute(new Runnable(){
 
 					@Override
 					public void run() {
-						MainActivity2.instence.botData.getGroup(groupId). addMember(MainActivity2.instence.cq.getGroupMemberInfo(groupId, qqId));
+						getGroupMemberInfo(groupId,qqId);
 					}
 				});
-			LogTool.t(MainActivity2.instence, "获取member失败" + qqId);
-		} else {
-			LogTool.t(MainActivity2.instence, "获取member成功" + qqId);
+				return null;
 		}
-		Member m =null;
-		try{m=new Member(
-				recData.readLong(),
-				recData.readLong(),
-				recData.readString(),
-				recData.readString(),
-				recData.readInt(),
-				recData.readInt(),
-				recData.readString(),
-				new Date(recData.readLong()),
-				new Date(recData.readLong()),
-				recData.readString(),
-				recData.readInt(),
-				recData.readString(),
-				new Date(recData.readLong()),
-				recData.readBoolean(),
-				recData.readBoolean());
-			
-		}catch(Exception e){
-			LogTool.t(MainActivity2.instence, "获取member失败" + qqId);
-		}
-			if(m==null){
-				LogTool.t(MainActivity2.instence, "获取member失败" + qqId);
-			}
-			return m;
-    }
-
-	public Group getGroupInfo(long groupId) {
-		LogTool.t(MainActivity2.instence, "获取group" + groupId);
-
-		BotDataPack bdp=BotDataPack.encode(BotDataPack.opGroupMemberInfo);
-		bdp.write(groupId);
-		send(bdp);
-		BotDataPack recData=getTaskResult(BotDataPack.opGroupMemberInfo);
-		if (recData == null) {
-			LogTool.t(MainActivity2.instence, "获取group失败" + groupId);
-		} else {
-			LogTool.t(MainActivity2.instence, "获取group成功" + groupId);
-		}
-		Group g = new Group(recData.readLong(), recData.readString());
-		LogTool.t(MainActivity2.instence, g.toString());
-		return g;
+		return new Member(
+			recData.readLong(),
+			recData.readLong(),
+			recData.readString(),
+			recData.readString(),
+			recData.readInt(),
+			recData.readInt(),
+			recData.readString(),
+			new Date(recData.readLong()),
+			new Date(recData.readLong()),
+			recData.readString(),
+			recData.readInt(),
+			recData.readString(),
+			new Date(recData.readLong()),
+			recData.readBoolean(),
+			recData.readBoolean());
     }
 
     public void setDiscussLeave(long discussionId) {

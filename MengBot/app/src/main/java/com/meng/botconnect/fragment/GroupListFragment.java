@@ -41,7 +41,11 @@ public class GroupListFragment extends Fragment {
 					transaction.commit();
 					switch (cf.getAuth()) {
 						case 1:
-							MainActivity2.instence.ab.setBackgroundDrawable(new ColorDrawable(Color.GRAY));
+							if (MainActivity.sharedPreference.getBoolean("useLightTheme", true)) {
+								MainActivity2.instence.ab.setBackgroundDrawable(new ColorDrawable(Color.argb(0xff, 0x3f, 0x51, 0xb5)));
+							} else {
+								MainActivity2.instence.ab.setBackgroundDrawable(new ColorDrawable(Color.GRAY));
+							}
 							break;
 						case 2:
 							MainActivity2.instence.ab.setBackgroundDrawable(new ColorDrawable(Color.GREEN));

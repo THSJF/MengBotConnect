@@ -11,7 +11,7 @@ public class SettingsFragment extends PreferenceFragment {
     public void onCreate(Bundle savedInstanceState) {
         // TODO: Implement this method
         super.onCreate(savedInstanceState);
-        getPreferenceManager().setSharedPreferencesName("main");
+        getPreferenceManager().setSharedPreferencesName("preference");
         addPreferencesFromResource(R.xml.preference);
         CheckBoxPreference cb = (CheckBoxPreference) findPreference("useLightTheme");
         cb.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {

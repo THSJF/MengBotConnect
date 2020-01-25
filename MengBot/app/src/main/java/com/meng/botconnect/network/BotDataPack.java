@@ -48,7 +48,6 @@ public class BotDataPack {
 	public static final int heardBeat = 24;
 	
 	public static final int onGroupMsg = 25;
-	public static final int opGroupInfo = 26;
 
 	public static final int getConfig = 27;
 	

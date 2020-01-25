@@ -29,13 +29,17 @@ public class ChatFragment extends Fragment {
 	}
 
 	public void setAuth(int auth) {
-	/*	int titleId = Resources.getSystem().getIdentifier(
-			"action_bar_title", "id", "android");
-		TextView yourTextView = (TextView)getActivity().findViewById(titleId);
-		yourTextView.setTextColor(Color.BLACK);
-	*/	switch (auth) {
+		/*	int titleId = Resources.getSystem().getIdentifier(
+		 "action_bar_title", "id", "android");
+		 TextView yourTextView = (TextView)getActivity().findViewById(titleId);
+		 yourTextView.setTextColor(Color.BLACK);
+		 */	switch (auth) {
 			case 1:
-				MainActivity2.instence.ab.setBackgroundDrawable(new ColorDrawable(Color.GRAY));
+				if (MainActivity.sharedPreference.getBoolean("useLightTheme", true)) {
+					MainActivity2.instence.ab.setBackgroundDrawable(new ColorDrawable(Color.argb(0xff, 0x3f, 0x51, 0xb5)));
+				} else {
+					MainActivity2.instence.ab.setBackgroundDrawable(new ColorDrawable(Color.GRAY));
+				}
 				break;
 			case 2:
 				MainActivity2.instence.ab.setBackgroundDrawable(new ColorDrawable(Color.GREEN));
@@ -67,14 +71,16 @@ public class ChatFragment extends Fragment {
 
 				@Override
 				public void run() {
-					final int au=MainActivity2.instence.cq.getGroupMemberInfo(group.id,MainActivity2.onLoginQQ).getAuthority();
-					getActivity().runOnUiThread(new Runnable(){
+					final Member m=MainActivity2.instence.cq.getGroupMemberInfo(group.id, MainActivity2.onLoginQQ);
+					if (m != null) {
+						getActivity().runOnUiThread(new Runnable(){
 
-							@Override
-							public void run() {
-								setAuth(au);
-							}
-						});
+								@Override
+								public void run() {
+									setAuth(m.getAuthority());
+								}
+							});
+					}
 				}
 			});
 		lv.setAdapter(new ChatListAdapter(this, MainActivity2.instence.botData.getGroup(group.id).messageList));

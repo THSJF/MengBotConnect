@@ -8,6 +8,7 @@ import android.support.v4.widget.*;
 import android.view.*;
 import android.widget.*;
 import android.widget.AdapterView.*;
+import com.google.gson.*;
 import com.google.gson.reflect.*;
 import com.meng.botconnect.bean.*;
 import com.meng.botconnect.fragment.*;
@@ -20,9 +21,6 @@ import java.util.*;
 import java.util.concurrent.*;
 
 import com.meng.botconnect.bean.Member;
-import com.google.gson.*;
-import android.graphics.drawable.*;
-import android.graphics.*;
 
 public class MainActivity2 extends Activity {
 	public static long onLoginQQ = 2528419891L;
@@ -73,13 +71,14 @@ public class MainActivity2 extends Activity {
 		if (!botDataFile.exists()) {
 			saveSanaeConfig();
 		}
-        botData = gson.fromJson(Tools.FileTool.readString(botDataFile), type);
+    //    botData = gson.fromJson(Tools.FileTool.readString(botDataFile), type);
 		try {
+			LogTool.t(MainActivity2.instence,String.format("ws://%s:%s", CoolQ.ip, CoolQ.port));
 			cq = new CoolQ();
+			cq.connect();
 		} catch (Exception e) {
 			LogTool.e(this, e);
 		}
-		cq.connect();
 		threadPool.execute(new Runnable(){
 
 				@Override

@@ -53,9 +53,9 @@ public class ExceptionCatcher implements Thread.UncaughtExceptionHandler {
         if (ex == null) {
             return false;
         }
-		if(ex instanceof RuntimeException){
+		/*if(ex instanceof RuntimeException){
 			return true;
-		}
+		}*/
         collectDeviceInfo(mContext);
         addCustomInfo();
         new Thread() {
@@ -66,7 +66,7 @@ public class ExceptionCatcher implements Thread.UncaughtExceptionHandler {
                 Looper.loop();
             }
         }.start();
-     //   saveCrashInfo2File(ex);
+        saveCrashInfo2File(ex);
         return true;
     }
 
