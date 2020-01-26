@@ -105,6 +105,15 @@ public class Tools {
 	}
 
 	public static class CQ {
+		public static int getG_tk(String skey) {
+			int hash = 5381;
+			int flag = skey.length();
+			for (int i = 0; i < flag; i++) {
+				hash = hash + hash * 32 + skey.charAt(i);
+			}
+			return hash & 0x7fffffff;
+		}
+
 		public static String getTime() {
 			return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
 		}

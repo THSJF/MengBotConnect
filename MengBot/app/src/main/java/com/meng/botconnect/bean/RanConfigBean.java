@@ -24,7 +24,7 @@ public class RanConfigBean {
 		if (nick == null) {
 			PersonInfo pi=getPersonInfoFromQQ(qq);
 			if (pi == null) {
-				Member m=MainActivity2.instence.botData.getGroupMember(group, qq);
+				Member m=MainActivity2.instance.botData.getGroupMember(group, qq);
 				if (m == null) {
 					return null;
 				}

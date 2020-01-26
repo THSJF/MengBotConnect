@@ -20,13 +20,13 @@ public class BotMessage {
 
 	public String getUserName() {
 		String nick=null;
-		nick = MainActivity2.instence.botData.ranConfig.getNickName(group, fromQQ);
+		nick = MainActivity2.instance.botData.ranConfig.getNickName(group, fromQQ);
 		if (nick != null) {
 			return nick;
 		}
-		Member m=MainActivity2.instence.botData.getGroupMember(group, fromQQ);
+		Member m=MainActivity2.instance.botData.getGroupMember(group, fromQQ);
 		if (m == null) {
-			return null;
+			return String.valueOf(fromQQ);
 		}
 		return m.getNick();
 	}

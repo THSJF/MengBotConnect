@@ -20,99 +20,181 @@ import android.view.View.OnClickListener;
 public class ChatFragment extends Fragment {
 
 	private Group group;
-	public ListView lv;
-	private EditText et;
-	private ImageButton ib;
-	private int auth=1;
+	public ListView lvMsg;
+	private EditText etMsgToSend;
+	private ImageButton ibSend;
+
 	public ChatFragment(Group g) {
 		group = g;
 	}
 
-	public void setAuth(int auth) {
-		/*	int titleId = Resources.getSystem().getIdentifier(
-		 "action_bar_title", "id", "android");
-		 TextView yourTextView = (TextView)getActivity().findViewById(titleId);
-		 yourTextView.setTextColor(Color.BLACK);
-		 */	switch (auth) {
-			case 1:
-				if (MainActivity.sharedPreference.getBoolean("useLightTheme", true)) {
-					MainActivity2.instence.ab.setBackgroundDrawable(new ColorDrawable(Color.argb(0xff, 0x3f, 0x51, 0xb5)));
-				} else {
-					MainActivity2.instence.ab.setBackgroundDrawable(new ColorDrawable(Color.GRAY));
-				}
-				break;
-			case 2:
-				MainActivity2.instence.ab.setBackgroundDrawable(new ColorDrawable(Color.GREEN));
-				break;
-			case 3:
-				MainActivity2.instence.ab.setBackgroundDrawable(new ColorDrawable(Color.YELLOW));
-				break;
+	@Override
+	public void onHiddenChanged(boolean hidden) {
+		if (!hidden) {
+			getActivity().runOnUiThread(new Runnable(){
+
+					@Override
+					public void run() {
+						Member m=group.getMenberByQQ(MainActivity2.nowBot.getOnLoginQQ());
+						if (m == null) {
+							MainActivity2.instance.threadPool.execute(new Runnable(){
+
+									@Override
+									public void run() {
+										while(group.getMenberByQQ(MainActivity2.nowBot.getOnLoginQQ())==null){
+											try {
+												Thread.sleep(1000);
+											} catch (InterruptedException e) {}
+										}
+										onHiddenChanged(false);
+									}
+								});
+							if (MainActivity.sharedPreference.getBoolean("useLightTheme")) {
+								MainActivity2.instance.ab.setBackgroundDrawable(new ColorDrawable(Color.argb(0xff, 0x3f, 0x51, 0xb5)));
+							} else {
+								MainActivity2.instance.ab.setBackgroundDrawable(new ColorDrawable(Color.GRAY));
+							}
+							return;
+						}
+						switch (m.getAuthority()) {
+							case 1:
+								if (MainActivity.sharedPreference.getBoolean("useLightTheme")) {
+									MainActivity2.instance.ab.setBackgroundDrawable(new ColorDrawable(Color.argb(0xff, 0x3f, 0x51, 0xb5)));
+								} else {
+									MainActivity2.instance.ab.setBackgroundDrawable(new ColorDrawable(Color.GRAY));
+								}
+								break;
+							case 2:
+								MainActivity2.instance.ab.setBackgroundDrawable(new ColorDrawable(Color.GREEN));
+								break;
+							case 3:
+								MainActivity2.instance.ab.setBackgroundDrawable(new ColorDrawable(Color.YELLOW));
+								break;
+						}
+					}
+				});
 		}
-		this.auth = auth;
+		super.onHiddenChanged(hidden);
 	}
 
-	public int getAuth() {
-		return auth;
-	}
+	/*public void setAuth(final int auth) {
+	 int titleId = Resources.getSystem().getIdentifier(
+	 "action_bar_title", "id", "android");
+	 TextView yourTextView = (TextView)getActivity().findViewById(titleId);
+	 yourTextView.setTextColor(Color.BLACK);
+
+	 }*/
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		// TODO: Implement this method
 		return inflater.inflate(R.layout.chat_view, container, false);
 	}
 
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-		lv = (ListView) view.findViewById(R.id.chat_viewListView);
-		et = (EditText) view.findViewById(R.id.chat_viewEditText);
-		ib = (ImageButton) view.findViewById(R.id.chat_viewImageButton);
-		MainActivity2.instence.threadPool.execute(new Runnable(){
-
-				@Override
-				public void run() {
-					final Member m=MainActivity2.instence.cq.getGroupMemberInfo(group.id, MainActivity2.onLoginQQ);
-					if (m != null) {
-						getActivity().runOnUiThread(new Runnable(){
-
-								@Override
-								public void run() {
-									setAuth(m.getAuthority());
-								}
-							});
-					}
-				}
-			});
-		lv.setAdapter(new ChatListAdapter(this, MainActivity2.instence.botData.getGroup(group.id).messageList));
-		lv.setOnItemClickListener(new OnItemClickListener(){
+		lvMsg = (ListView) view.findViewById(R.id.chat_viewListView);
+		etMsgToSend = (EditText) view.findViewById(R.id.chat_viewEditText);
+		ibSend = (ImageButton) view.findViewById(R.id.chat_viewImageButton);
+		MainActivity2.instance.CQ.getGroupMemberInfo(group.id, MainActivity2.nowBot.getOnLoginQQ());
+		lvMsg.setAdapter(new ChatListAdapter(this.getActivity(), group.getMessageList()));
+		lvMsg.setOnItemClickListener(new OnItemClickListener(){
 
 				@Override
 				public void onItemClick(AdapterView<?> p1, View p2, int p3, long p4) {
-					final BotMessage mb=(BotMessage) p1.getAdapter().getItem(p3);
-					AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-					builder.setIcon(R.drawable.ic_launcher);
-					builder.setTitle("选择一个时间");
-					//    指定下拉列表的显示数据
-					final String[] cities = {"0", "60", "120", "180", "600"};
-					//    设置一个下拉的列表选择项
-					builder.setItems(cities, new DialogInterface.OnClickListener(){
+					final BotMessage bm=(BotMessage) p1.getAdapter().getItem(p3);
+					final String[] cities = {"禁言","设置群名片","设置群头衔","点赞","设为管理员","取消管理员","踢出本群"};
+					new AlertDialog.Builder(getActivity()).
+						setIcon(R.drawable.ic_launcher).
+						setTitle("选择操作").
+						setItems(cities, new DialogInterface.OnClickListener(){
 							@Override
 							public void onClick(DialogInterface dialog, int which) {
-								Toast.makeText(getActivity(), String.format("群:%d 用户:%d 时间:%s", mb.getGroup(), mb.getFromQQ(), cities[which]), Toast.LENGTH_SHORT).show();
-								MainActivity2.instence.cq.setGroupBan(mb.getGroup(), mb.getFromQQ(), Long.parseLong(cities[which]));
+								switch (which) {
+									case 0:
+										showBan(bm);
+										break;
+									case 1:
+										showSetGroupNick(bm);
+										break;
+									case 2:
+										showSetGroupSpecialTitle(bm);
+										break;
+									case 3:
+										MainActivity2.instance.CQ.sendLike(bm.getFromQQ(), 10);
+										break;
+									case 4:
+										MainActivity2.instance.CQ.setGroupAdmin(bm.getGroup(), bm.getFromQQ(), true);
+										break;
+									case 5:
+										MainActivity2.instance.CQ.setGroupAdmin(bm.getGroup(), bm.getFromQQ(), false);
+										break;
+									case 6:
+										new AlertDialog.Builder(getActivity())
+											.setTitle("确定踢出吗")
+											.setPositiveButton("是", new DialogInterface.OnClickListener() {
+												@Override
+												public void onClick(DialogInterface p1, int p2) {
+													MainActivity2.instance.CQ.setGroupKick(bm.getGroup(), bm.getFromQQ(), false);	
+												}
+											}).setNegativeButton("否", null).show();
+										break;
+								}
 							}
-						});
-					builder.show();
-
+						}).show();
 				}
 			});
-		ib.setOnClickListener(new OnClickListener(){
+		ibSend.setOnClickListener(new OnClickListener(){
 
 				@Override
 				public void onClick(View p1) {
-					LogTool.t(getActivity(), et.getText().toString());
-					MainActivity2.instence.cq.sendGroupMsg(group.id, et.getText().toString());
+					MainActivity2.instance.CQ.sendGroupMsg(group.id, etMsgToSend.getText().toString());
+					etMsgToSend.setText("");
 				}
 			});
+	}
+
+	public void showBan(final BotMessage mb) {
+		final String[] cities = {"0", "60", "120", "180", "600"};
+		new AlertDialog.Builder(getActivity()).
+			setIcon(R.drawable.ic_launcher).
+			setTitle("选择一个时间").
+			setItems(cities, new DialogInterface.OnClickListener(){
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					Toast.makeText(getActivity(), String.format("群:%d 用户:%d 时间:%s", mb.getGroup(), mb.getFromQQ(), cities[which]), Toast.LENGTH_SHORT).show();
+					MainActivity2.instance.CQ.setGroupBan(mb.getGroup(), mb.getFromQQ(), Long.parseLong(cities[which]));
+				}
+			}).show();
+	}
+
+	public void showSetGroupSpecialTitle(final BotMessage bm) {
+		final EditText et = new EditText(MainActivity2.instance);
+		et.setHint("群头衔");
+		new AlertDialog.Builder(getActivity())
+			.setView(et)
+			.setTitle("编辑")
+			.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+
+				@Override
+				public void onClick(DialogInterface p1, int p2) {
+					MainActivity2.instance.CQ.setGroupSpecialTitle(group.id, bm.getFromQQ(), et.getText().toString(), -1);
+				}
+			}).setNegativeButton("取消", null).show();
+	}
+
+	public void showSetGroupNick(final BotMessage bm) {
+		final EditText et = new EditText(MainActivity2.instance);
+		et.setHint("群名片");
+		new AlertDialog.Builder(getActivity())
+			.setView(et)
+			.setTitle("编辑")
+			.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+
+				@Override
+				public void onClick(DialogInterface p1, int p2) {
+					MainActivity2.instance.CQ.setGroupCard(group.id, bm.getFromQQ(), et.getText().toString());
+				}
+			}).setNegativeButton("取消", null).show();
 	}
 }

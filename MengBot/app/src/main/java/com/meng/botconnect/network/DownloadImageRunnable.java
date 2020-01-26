@@ -6,15 +6,16 @@ import android.widget.*;
 import com.meng.botconnect.*;
 import java.io.*;
 import java.net.*;
+import android.content.*;
 
 public class DownloadImageRunnable implements Runnable {
     private ImageView imageView;
     private long id = 0;
     private File imageFile;
-    private Fragment context;
+    private Context context;
 	private int headType=0;
 
-    public DownloadImageRunnable(Fragment context, ImageView imageView, long id, int headType) {
+    public DownloadImageRunnable(Context context, ImageView imageView, long id, int headType) {
         this.context = context;
         this.imageView = imageView;
 		this.id = id;
@@ -56,7 +57,7 @@ public class DownloadImageRunnable implements Runnable {
             }
             is.close();
             connection.disconnect();
-            context.getActivity().runOnUiThread(new Runnable() {
+            ((Activity)context).runOnUiThread(new Runnable() {
 
 					@Override
 					public void run() {

@@ -23,12 +23,12 @@ import java.util.concurrent.*;
 import com.meng.botconnect.bean.Member;
 
 public class MainActivity2 extends Activity {
-	public static long onLoginQQ = 2528419891L;
-	public static String onLoginNick="Sanae";
-    public static MainActivity2 instence;
+	public static MainActivity2 instance;
+	public static BotInfo nowBot=new BotInfo();
     private final String logString = "以下为操作记录：\n";
     private DrawerLayout mDrawerLayout;
     private ListView lvDrawer;
+	public View headView;
     private RelativeLayout rt;
     private ActionBarDrawerToggle mDrawerToggle;
     private DrawerArrowDrawable drawerArrow;
@@ -38,26 +38,26 @@ public class MainActivity2 extends Activity {
     public TextView rightText;
 	public ConcurrentHashMap<Long,ChatFragment> chatFragments=new ConcurrentHashMap<>();
 	public FragmentManager fragmentManager;
-	public CoolQ cq;
+	public CoolQ CQ;
 	public ExecutorService threadPool = Executors.newCachedThreadPool();
 	public static String mainFolder;
 	public static final int SELECT_FILE_REQUEST_CODE = 822;
 	private final String[] menus = new String[]{"群消息", "状态","设置","退出"};
 	public ActionBar ab;
 	public BotData botData=new BotData();
-	private File botDataFile;
 	public Gson gson;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
-        instence = this;
+        instance = this;
 		mainFolder = Environment.getExternalStorageDirectory() + "/Pictures/grzx/";
 		ab = getActionBar();
         ab.setDisplayHomeAsUpEnabled(true);
         ab.setHomeButtonEnabled(true);
 		findViews();
+		headView = getLayoutInflater().inflate(R.layout.lv_drawer_head, null);
         rightText.setText(logString);
         fragmentManager = getFragmentManager();
         setListener();
@@ -65,46 +65,40 @@ public class MainActivity2 extends Activity {
 		GsonBuilder gb = new GsonBuilder();
 		gb.setLongSerializationPolicy(LongSerializationPolicy.STRING);
 		gson = gb.create();
-		Type type = new TypeToken<BotData>() {
-		}.getType();
-		botDataFile = new File(Environment.getExternalStorageDirectory() + "/SanaeConfig.json");
-		if (!botDataFile.exists()) {
-			saveSanaeConfig();
-		}
-    //    botData = gson.fromJson(Tools.FileTool.readString(botDataFile), type);
 		try {
-			LogTool.t(MainActivity2.instence,String.format("ws://%s:%s", CoolQ.ip, CoolQ.port));
-			cq = new CoolQ();
-			cq.connect();
+			LogTool.t(MainActivity2.instance, String.format("ws://%s:%s", CoolQ.ip, CoolQ.port));
+			CQ = new CoolQ();
+			CQ.connect();
 		} catch (Exception e) {
 			LogTool.e(this, e);
 		}
-		threadPool.execute(new Runnable(){
-
-				@Override
-				public void run() {
-					while (true) {
-						try {
-							Thread.sleep(10000);
-						} catch (InterruptedException e) {}
-						saveSanaeConfig();
-					}
-				}
-			});
     }
+
+	public void addHeaderView() {
+		if (lvDrawer.getHeaderViewsCount() < 1) {
+			lvDrawer.addHeaderView(headView);
+		}
+	}
 	public void addMsg(final BotMessage bm) {
 		runOnUiThread(new Runnable(){
 
 				@Override
 				public void run() {
 					Group g=botData.getGroup(bm.getGroup());
-					g.messageList.add(bm);
+					if (g == null) {
+						g = new Group(bm.getGroup(), "群" + bm.getGroup());
+						botData.addGroup(g);
+					}
+					g.addMessage(bm);
+					if (g.getMenberByQQ(bm.getFromQQ()) == null) {
+						CQ.getGroupMemberInfo(g.id, bm.getFromQQ());
+					}
 					((BaseAdapter) messageFragment.lv.getAdapter()).notifyDataSetChanged();
 					ChatFragment cf=chatFragments.get(bm.getGroup());
 					if (cf == null) {
 						return;
 					}
-					((BaseAdapter)cf.lv.getAdapter()).notifyDataSetChanged();
+					((BaseAdapter)cf.lvMsg.getAdapter()).notifyDataSetChanged();
 				}
 			});
 	}
@@ -112,9 +106,14 @@ public class MainActivity2 extends Activity {
 		addMsg(new BotMessage(1, group, qq, msg, new Random().nextInt()));
 	}
 
-	public void addGroupMember(long group, long qq, Member m) {
-		Group g=botData.getGroup(group);
-		g.memberSet.put(qq, m);
+	public void addGroupMember(Member m) {
+		Group g=botData.getGroup(m.getGroupId());
+		if (g == null) {
+			g = new Group(m.getGroupId(), "群" + m.getGroupId());
+			botData.addGroup(g);
+		}
+		g.addMember(m);
+		g.onGettingInfo.remove(m.getQqId());
 	}
 
 	public void selectImage(Fragment f) {
@@ -183,8 +182,7 @@ public class MainActivity2 extends Activity {
 
 				@Override
 				public void onItemClick(AdapterView<?> p1, View p2, int p3, long p4) {
-					LogTool.i(MainActivity2.this, menus[p3]);
-					switch (menus[p3]) {
+					switch ((String)p1.getAdapter().getItem(p3)) {
 						case "群消息":
 							initGroupList(true);
 							break;
@@ -294,21 +292,17 @@ public class MainActivity2 extends Activity {
         mDrawerToggle.onConfigurationChanged(newConfig);
     }
 
-	public void saveSanaeConfig() {
-        try {
-            FileOutputStream fos = new FileOutputStream(botDataFile);
-            OutputStreamWriter writer = new OutputStreamWriter(fos, StandardCharsets.UTF_8);
-            writer.write(gson.toJson(botData));
-            writer.flush();
-            fos.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+	@Override
+	protected void onResume() {
+		if (CQ.isClosed()) {
+			CQ.reconnect();
+		}
+		super.onResume();
+	}
+
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        // TODO: Implement this method
         if (keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_MENU) {
             if (mDrawerLayout.isDrawerOpen(lvDrawer)) {
                 mDrawerLayout.closeDrawer(lvDrawer);

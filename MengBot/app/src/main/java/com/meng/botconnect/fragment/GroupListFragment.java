@@ -23,37 +23,22 @@ public class GroupListFragment extends Fragment {
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 		lv = (ListView) view.findViewById(R.id.groups_listListView);
-		lv.setAdapter(new GroupListAdapter(this, MainActivity2.instence.botData.groupList));
+		lv.setAdapter(new GroupListAdapter(this.getActivity(), MainActivity2.instance.botData.groupList));
 		lv.setOnItemClickListener(new OnItemClickListener(){
 
 				@Override
 				public void onItemClick(final AdapterView<?> p1, View p2, final int p3, long p4) {
 					Group g=(Group) p1.getAdapter().getItem(p3);
-					FragmentTransaction transaction =MainActivity2.instence.fragmentManager.beginTransaction();
-					ChatFragment cf=MainActivity2.instence.chatFragments.get(g.id);
+					FragmentTransaction transaction =MainActivity2.instance.fragmentManager.beginTransaction();
+					MainActivity2.instance.CQ.getGroupMemberList(g.id);
+					ChatFragment cf=MainActivity2.instance.chatFragments.get(g.id);
 					if (cf == null) {
 						cf = new ChatFragment(g);
-						MainActivity2.instence.chatFragments.put(g.id, cf);
+						MainActivity2.instance.chatFragments.put(g.id, cf);
 						transaction.add(R.id.main_activityLinearLayout, cf);
 					}
-					MainActivity2.instence.hideFragment(transaction);
-					transaction.show(cf);
-					transaction.commit();
-					switch (cf.getAuth()) {
-						case 1:
-							if (MainActivity.sharedPreference.getBoolean("useLightTheme", true)) {
-								MainActivity2.instence.ab.setBackgroundDrawable(new ColorDrawable(Color.argb(0xff, 0x3f, 0x51, 0xb5)));
-							} else {
-								MainActivity2.instence.ab.setBackgroundDrawable(new ColorDrawable(Color.GRAY));
-							}
-							break;
-						case 2:
-							MainActivity2.instence.ab.setBackgroundDrawable(new ColorDrawable(Color.GREEN));
-							break;
-						case 3:
-							MainActivity2.instence.ab.setBackgroundDrawable(new ColorDrawable(Color.YELLOW));
-							break;
-					}
+					MainActivity2.instance.hideFragment(transaction);
+					transaction.show(cf).commit();
 				}
 			});
 	}

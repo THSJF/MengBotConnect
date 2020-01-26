@@ -48,7 +48,7 @@
         android:layout_gravity="end"
         android:background="#eeeeee"
         android:gravity="center_horizontal">
-
+			
         <ScrollView
             android:layout_width="fill_parent"
             android:layout_height="fill_parent">

@@ -15,16 +15,17 @@ import com.meng.botconnect.bean.Member;
 
 
 public class CoolQ extends WebSocketClient {
-	private HashMap<Integer,BotDataPack> resultMap=new HashMap<>();
+
 	public static String ip=null;
 	public static String port=null;
+
 	public CoolQ() throws Exception {
 		super(new URI(String.format("ws://%s:%s", ip, port)));
 	}
 
 	@Override
 	public void onMessage(String p1) {
-		LogTool.t(MainActivity2.instence, p1);
+		LogTool.t(MainActivity2.instance, p1);
 	}
 
 	public void send(BotDataPack bdp) {
@@ -33,24 +34,26 @@ public class CoolQ extends WebSocketClient {
 
 	@Override
 	public void onOpen(ServerHandshake serverHandshake) {
-		LogTool.t(MainActivity2.instence, "连接到苗");
+		LogTool.t(MainActivity2.instance, "连接到server");
 		send(BotDataPack.encode(BotDataPack.getConfig));
-		//MainActivity2.onLoginQQ = getLoginQQ();
-		//MainActivity2.onLoginNick = getLoginNick();
-		MainActivity2.instence.threadPool.execute(new Runnable(){
+		send(BotDataPack.encode(BotDataPack.opLoginNick));
+		send(BotDataPack.encode(BotDataPack.opLoginQQ));
+		send(BotDataPack.encode(BotDataPack.opCookies));
+		send(BotDataPack.encode(BotDataPack.opGroupList));
+		MainActivity2.instance.threadPool.execute(new Runnable(){
 
 				@Override
 				public void run() {
 					try {
 						send(BotDataPack.encode(BotDataPack.heardBeat));
 					} catch (WebsocketNotConnectedException e) {
-						LogTool.e(MainActivity2.instence, e);
+						LogTool.e(MainActivity2.instance, e);
 						reconnect();
 					}
 					try {
 						Thread.sleep(10000);
 					} catch (InterruptedException e) {
-						LogTool.e(MainActivity2.instence, e);
+						LogTool.e(MainActivity2.instance, e);
 					}
 				}
 			});
@@ -58,55 +61,115 @@ public class CoolQ extends WebSocketClient {
 
 	@Override
 	public void onMessage(ByteBuffer bs) {	
-		BotDataPack dataRec=BotDataPack.decode(bs.array());
-		if (dataRec.getOpCode() == BotDataPack.onGroupMsg) {
-			while (dataRec.hasNext()) {
-				BotMessage bm=new BotMessage(dataRec.readInt(), dataRec.readLong(), dataRec.readLong(), dataRec.readString(), dataRec.readInt());
-				MainActivity2.instence.addMsg(bm);
+		BotDataPack rec=BotDataPack.decode(bs.array());
+		if (rec.getOpCode() == BotDataPack.onGroupMsg) {
+			while (rec.hasNext()) {
+				MainActivity2.instance.addMsg(new BotMessage(rec.readInt(), rec.readLong(), rec.readLong(), rec.readString(), rec.readInt()));
 			}
-		} else if (dataRec.getOpCode() == BotDataPack.getConfig) {
-			Type type = new TypeToken<RanConfigBean>() {
-			}.getType();
-			MainActivity2.instence.botData.ranConfig = MainActivity2.instence.gson.fromJson(dataRec.readString(), type);
 		} else {
-			resultMap.put(dataRec.getOpCode(), dataRec);
+			switch (rec.getOpCode()) {
+				case BotDataPack.opLoginQQ:
+					MainActivity2.nowBot.setOnLoginQQ(rec.readLong());
+					break;
+				case BotDataPack.opLoginNick:
+					MainActivity2.nowBot.setOnLoginNick(rec.readString());
+					break;
+				case BotDataPack.opCookies:
+					MainActivity2.nowBot.setCookie(rec.readString());
+					break;
+				case BotDataPack.opCsrfToken:
+					MainActivity2.nowBot.setCsrfToken(rec.readInt());
+					break;
+				case BotDataPack.opGroupMemberInfo:
+					Member m=new Member(
+						rec.readLong(),
+						rec.readLong(),
+						rec.readString(),
+						rec.readString(),
+						rec.readInt(),
+						rec.readInt(),
+						rec.readString(),
+						new Date(rec.readLong()),
+						new Date(rec.readLong()),
+						rec.readString(),
+						rec.readInt(),
+						rec.readString(),
+						new Date(rec.readLong()),
+						rec.readBoolean(),
+						rec.readBoolean());
+					MainActivity2.instance.addGroupMember(m);
+					break;
+					/*	case BotDataPack.opFriendAddRequest:
+					 toSend = BotDataPack.encode(rec.getOpCode());
+					 break;*/
+				case BotDataPack.opGroupMemberList:
+					int mc=0;
+					while (rec.hasNext()) {
+						Member m2=new Member(
+							rec.readLong(),
+							rec.readLong(),
+							rec.readString(),
+							rec.readString(),
+							rec.readInt(),
+							rec.readInt(),
+							rec.readString(),
+							new Date(rec.readLong()),
+							new Date(rec.readLong()),
+							rec.readString(),
+							rec.readInt(),
+							rec.readString(),
+							new Date(rec.readLong()),
+							rec.readBoolean(),
+							rec.readBoolean());
+						MainActivity2.instance.addGroupMember(m2);
+						++mc;
+					}
+					LogTool.t(MainActivity2.instance, "获得了" + mc + "个用户");
+					break;
+				case BotDataPack.opGroupList:
+					int gc=0;
+					while (rec.hasNext()) {
+						Group g=new Group();
+						g.id = rec.readLong();
+						g.name = rec.readString();
+						MainActivity2.instance.botData.addGroup(g);
+						++gc;
+					}
+					MainActivity2.nowBot.setGroupCount(gc);
+					break;
+				case BotDataPack.getConfig:
+					MainActivity2.instance.botData.ranConfig = MainActivity2.instance.gson.fromJson(rec.readString(), new TypeToken<RanConfigBean>() {}.getType());
+					break;
+			}
+
 		}
+
+
+		/*if (dataRec.getOpCode() == BotDataPack.getConfig) {
+		 Type type = new TypeToken<RanConfigBean>() {
+		 }.getType();
+		 MainActivity2.instence.botData.ranConfig = MainActivity2.instence.gson.fromJson(dataRec.readString(), type);
+		 } else {
+		 resultMap.put(dataRec.getOpCode(), dataRec);
+		 }*/
 	}
 
 	@Override
 	public void onClose(int i, String s, boolean b) {
-		LogTool.t(MainActivity2.instence, "连接断开");
+		LogTool.t(MainActivity2.instance, "连接断开");
 	}
 
 	@Override
 	public void onError(Exception e) {
-		LogTool.t(MainActivity2.instence, e);
+		LogTool.t(MainActivity2.instance, e);
 	}
 
-	private BotDataPack getTaskResult(int opCode) {
-		int time=10000;
-		while (resultMap.get(opCode) == null && time-- > 0) {
-			try {
-				Thread.sleep(1);
-			} catch (InterruptedException e) {}
-		}
-		if (time < 1) {
-			LogTool.t(MainActivity2.instence, "time out");
-		}
-		BotDataPack tr=resultMap.get(opCode);
-		resultMap.remove(opCode);
-		return tr;
-	}
-
-    public long getLoginQQ() {
+    public void getLoginQQ() {
         send(BotDataPack.encode(BotDataPack.opLoginQQ));
-		return getTaskResult(BotDataPack.opLoginQQ).readLong();
+	}
 
-    }
-
-    public String getLoginNick() {
+    public void getLoginNick() {
 		send(BotDataPack.encode(BotDataPack.opLoginNick));
-		return getTaskResult(BotDataPack.opLoginNick).readString();
 	}
 
     public void sendPrivateMsg(long qqId, String msg) {
@@ -119,7 +182,7 @@ public class CoolQ extends WebSocketClient {
 		BotDataPack bdp=BotDataPack.encode(BotDataPack.opGroupMsg);
 		bdp.write(groupId).write(msg);
 		send(bdp);
-		MainActivity2.instence.addMsg(groupId, MainActivity2.onLoginQQ, msg);
+		MainActivity2.instance.addMsg(groupId, MainActivity2.nowBot.getOnLoginQQ(), msg);
 	}
 
     public void sendDiscussMsg(long discussionId, String msg) {
@@ -140,18 +203,16 @@ public class CoolQ extends WebSocketClient {
 		send(bdp);
 	}
 
-    public String getCookies() {
+    public void getCookies() {
 		send(BotDataPack.encode(BotDataPack.opCookies));
-		return getTaskResult(BotDataPack.opCookies).readString();
 	}
 
-    public int getCsrfToken() {
+    public void getCsrfToken() {
 		send(BotDataPack.encode(BotDataPack.opCsrfToken));
-		return getTaskResult(BotDataPack.opCsrfToken).readInt();
 	}
 
-    public String getRecord(String file, String outformat) {
-		return null;
+    public void getRecord(String file, String outformat) {
+		throw new RuntimeException("未实现的方法");
 	}
 
     public void setGroupKick(long groupId, long qqId, boolean notBack) {
@@ -208,38 +269,11 @@ public class CoolQ extends WebSocketClient {
 		send(bdp);
 	}
 
-    public Member getGroupMemberInfo(final long groupId, final long qqId) {
+    public void getGroupMemberInfo(long groupId, long qqId) {
 		BotDataPack bdp=BotDataPack.encode(BotDataPack.opGroupMemberInfo);
 		bdp.write(groupId).write(qqId);
 		send(bdp);
-		BotDataPack recData=getTaskResult(BotDataPack.opGroupMemberInfo);
-		if (recData == null) {
-			MainActivity2.instence.threadPool.execute(new Runnable(){
-
-					@Override
-					public void run() {
-						getGroupMemberInfo(groupId,qqId);
-					}
-				});
-				return null;
-		}
-		return new Member(
-			recData.readLong(),
-			recData.readLong(),
-			recData.readString(),
-			recData.readString(),
-			recData.readInt(),
-			recData.readInt(),
-			recData.readString(),
-			new Date(recData.readLong()),
-			new Date(recData.readLong()),
-			recData.readString(),
-			recData.readInt(),
-			recData.readString(),
-			new Date(recData.readLong()),
-			recData.readBoolean(),
-			recData.readBoolean());
-    }
+	}
 
     public void setDiscussLeave(long discussionId) {
 
@@ -253,44 +287,14 @@ public class CoolQ extends WebSocketClient {
 
 	}
 
-    public ArrayList<Member> getGroupMemberList(long groupId) {
+    public void getGroupMemberList(long groupId) {
 		BotDataPack bdp=BotDataPack.encode(BotDataPack.opGroupMemberList);
 		bdp.write(groupId);
 		send(bdp);
-		BotDataPack recData=getTaskResult(BotDataPack.opGroupMemberList);
-		ArrayList<Member> mlist=new ArrayList<>();
-		while (recData.hasNext()) {
-			mlist.add(new Member(
-						  recData.readLong(),
-						  recData.readLong(),
-						  recData.readString(),
-						  recData.readString(),
-						  recData.readInt(),
-						  recData.readInt(),
-						  recData.readString(),
-						  new Date(recData.readLong()),
-						  new Date(recData.readLong()),
-						  recData.readString(),
-						  recData.readInt(),
-						  recData.readString(),
-						  new Date(recData.readLong()),
-						  recData.readBoolean(),
-						  recData.readBoolean()));
-		}
-		return mlist;
     }
 
-    public ArrayList<Group> getGroupList() {
+    public void getGroupList() {
 		send(BotDataPack.encode(BotDataPack.opGroupList));
-		BotDataPack recData=getTaskResult(BotDataPack.opGroupList);
-		ArrayList<Group> mlist=new ArrayList<>();
-		while (recData.hasNext()) {
-			Group m=new Group();
-			m.id = recData.readLong();
-			m.name = recData.readString();
-			mlist.add(m);
-		}
-        return mlist;
     }
 
 	/* public Anonymous getAnonymous(String source) {

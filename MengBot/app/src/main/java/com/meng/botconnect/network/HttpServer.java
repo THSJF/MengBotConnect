@@ -38,7 +38,7 @@ public class HttpServer implements Runnable {
 
 		public void run() {
 			try {
-				MainActivity2.instence.threadPool.execute(new Runnable(){
+				MainActivity2.instance.threadPool.execute(new Runnable(){
 
 						@Override
 						public void run() {
@@ -52,18 +52,18 @@ public class HttpServer implements Runnable {
 										System.out.println("服务器读取客户端的：" + recStr);
 									}
 								} catch (IOException e) {
-									LogTool.e(MainActivity2.instence, e);
+									LogTool.e(MainActivity2.instance, e);
 								}
 								try {
 									Thread.sleep(10);
 								} catch (InterruptedException e) {
-									LogTool.e(MainActivity2.instence, e);
+									LogTool.e(MainActivity2.instance, e);
 								}
 							}
 						}
 					});
 
-				MainActivity2.instence.threadPool.execute(new Runnable(){
+				MainActivity2.instance.threadPool.execute(new Runnable(){
 
 						@Override
 						public void run() {
@@ -79,7 +79,7 @@ public class HttpServer implements Runnable {
 										}
 										Thread.sleep(10);
 									} catch (Exception e) {
-										LogTool.e(MainActivity2.instence, e);
+										LogTool.e(MainActivity2.instance, e);
 									}
 								}
 							}

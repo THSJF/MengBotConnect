@@ -35,8 +35,8 @@ public class LogTool {
 				@Override
 				public void run() {
 					// TODO: Implement this method
-					MainActivity2.instence.rightText.setText(
-                        MainActivity2.instence.rightText.getText().toString() +
+					MainActivity2.instance.rightText.setText(
+                        MainActivity2.instance.rightText.getText().toString() +
 						"点击:" + o.toString() + "\n"
 					);
 				}
@@ -49,8 +49,8 @@ public class LogTool {
 				@Override
 				public void run() {
 					// TODO: Implement this method
-					MainActivity2.instence.rightText.setText(
-                        MainActivity2.instence.rightText.getText().toString() +
+					MainActivity2.instance.rightText.setText(
+                        MainActivity2.instance.rightText.getText().toString() +
 						o.toString() + "\n"
 					);
 				}

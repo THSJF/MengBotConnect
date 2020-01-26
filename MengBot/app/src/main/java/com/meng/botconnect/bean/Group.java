@@ -1,7 +1,8 @@
 package com.meng.botconnect.bean;
 
+import android.app.*;
 import com.meng.botconnect.*;
-import com.meng.botconnect.lib.*;
+import com.meng.botconnect.fragment.*;
 import java.util.*;
 import java.util.concurrent.*;
 
@@ -9,9 +10,10 @@ public class Group {
 
     public long id;
     public String name;
-	public ConcurrentHashMap<Long,Member> memberSet=new ConcurrentHashMap<>();
-	public ArrayList<BotMessage> messageList=new ArrayList<>();
+	private ConcurrentHashMap<Long,Member> memberSet=new ConcurrentHashMap<>();
+	private ArrayList<BotMessage> messageList=new ArrayList<>();
 
+	public HashSet<Long> onGettingInfo=new HashSet<>();
     public Group() {
     }
 
@@ -19,6 +21,14 @@ public class Group {
         this.id = id;
         this.name = name;
     }
+
+	public void addMessage(BotMessage bm) {
+		messageList.add(bm);
+	}
+
+	public ArrayList<BotMessage> getMessageList() {
+		return messageList;
+	}
 
 	public void addMember(Member mToAdd) {
 		for (Member m:memberSet.values()) {
@@ -30,23 +40,11 @@ public class Group {
 		memberSet.put(mToAdd.getQqId(), mToAdd);
 	}
 
-	public Member getMenberByQQ(final long qq) {
+	public Member getMenberByQQ(long qq) {
 		Member m=memberSet.get(qq);
-		if (m == null) {
-			m = new Member();
-			m.setQqId(qq);
-			m.setNick("" + qq);
-			memberSet.put(qq, m);
-			MainActivity2.instence.threadPool.execute(new Runnable(){
-
-					@Override
-					public void run() {
-						Member m=MainActivity2.instence.cq.getGroupMemberInfo(id, qq);
-						if (m != null) {
-							addMember(m);
-						}
-					}
-				});
+		if (m == null && !onGettingInfo.contains(qq)) {
+			MainActivity2.instance.CQ.getGroupMemberInfo(id, qq);
+			onGettingInfo.add(qq);
 		}
 		return m;
 	}

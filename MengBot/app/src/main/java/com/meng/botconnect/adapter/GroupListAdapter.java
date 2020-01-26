@@ -9,12 +9,13 @@ import com.meng.botconnect.bean.*;
 import com.meng.botconnect.network.*;
 import java.io.*;
 import java.util.*;
+import android.content.*;
 
 public class GroupListAdapter extends BaseAdapter {
-	private Fragment context;
+	private Context context;
 	private ArrayList<Group> infosList;
 
-	public GroupListAdapter(Fragment context, ArrayList<Group> infosSet) {
+	public GroupListAdapter(Context context, ArrayList<Group> infosSet) {
 		this.context = context;
 		this.infosList = infosSet;
 	}
@@ -34,7 +35,7 @@ public class GroupListAdapter extends BaseAdapter {
 	public View getView(final int position, View convertView, ViewGroup parent) {
 		final ViewHolder holder;
 		if (convertView == null) {
-			convertView = context.getActivity().getLayoutInflater().inflate(R.layout.group_list_item, null);
+			convertView = ((Activity)context).getLayoutInflater().inflate(R.layout.group_list_item, null);
 			holder = new ViewHolder();
 			holder.imageViewQQHead = (ImageView) convertView.findViewById(R.id.group_list_itemImageView);
 			holder.textViewName = (TextView) convertView.findViewById(R.id.group_list_itemTextView);
@@ -48,12 +49,12 @@ public class GroupListAdapter extends BaseAdapter {
 		if (qqImageFile.exists()) {
 			holder.imageViewQQHead.setImageBitmap(BitmapFactory.decodeFile(qqImageFile.getAbsolutePath()));
 		} else {
-			MainActivity2.instence.threadPool.execute(new DownloadImageRunnable(context, holder.imageViewQQHead, group.id, 0));
+			MainActivity2.instance.threadPool.execute(new DownloadImageRunnable(context, holder.imageViewQQHead, group.id, 0));
 		}
 		holder.imageViewQQHead.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					MainActivity2.instence.threadPool.execute(new DownloadImageRunnable(context, holder.imageViewQQHead, group.id, 0));
+					MainActivity2.instance.threadPool.execute(new DownloadImageRunnable(context, holder.imageViewQQHead, group.id, 0));
 				}
 			});
 		return convertView;
