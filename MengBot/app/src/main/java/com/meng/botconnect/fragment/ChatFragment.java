@@ -41,7 +41,7 @@ public class ChatFragment extends Fragment {
 
 									@Override
 									public void run() {
-										while(group.getMenberByQQ(MainActivity2.nowBot.getOnLoginQQ())==null){
+										while (group.getMenberByQQ(MainActivity2.nowBot.getOnLoginQQ()) == null) {
 											try {
 												Thread.sleep(1000);
 											} catch (InterruptedException e) {}
@@ -98,10 +98,10 @@ public class ChatFragment extends Fragment {
 		ibSend = (ImageButton) view.findViewById(R.id.chat_viewImageButton);
 		MainActivity2.instance.CQ.getGroupMemberInfo(group.id, MainActivity2.nowBot.getOnLoginQQ());
 		lvMsg.setAdapter(new ChatListAdapter(this.getActivity(), group.getMessageList()));
-		lvMsg.setOnItemClickListener(new OnItemClickListener(){
+		lvMsg.setOnItemLongClickListener(new OnItemLongClickListener(){
 
 				@Override
-				public void onItemClick(AdapterView<?> p1, View p2, int p3, long p4) {
+				public boolean onItemLongClick(AdapterView<?> p1, View p2, int p3, long p4) {
 					final BotMessage bm=(BotMessage) p1.getAdapter().getItem(p3);
 					final String[] cities = {"禁言","设置群名片","设置群头衔","点赞","设为管理员","取消管理员","踢出本群"};
 					new AlertDialog.Builder(getActivity()).
@@ -142,6 +142,14 @@ public class ChatFragment extends Fragment {
 								}
 							}
 						}).show();
+					return true;
+				}
+			});
+		lvMsg.setOnItemClickListener(new OnItemClickListener(){
+
+				@Override
+				public void onItemClick(AdapterView<?> p1, View p2, int p3, long p4) {
+					LogTool.t(getActivity(), "click");
 				}
 			});
 		ibSend.setOnClickListener(new OnClickListener(){

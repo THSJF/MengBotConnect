@@ -1,6 +1,7 @@
 package com.meng.botconnect.adapter;
 
 import android.app.*;
+import android.content.*;
 import android.graphics.*;
 import android.view.*;
 import android.widget.*;
@@ -9,8 +10,6 @@ import com.meng.botconnect.bean.*;
 import com.meng.botconnect.network.*;
 import java.io.*;
 import java.util.*;
-import com.meng.botconnect.lib.*;
-import android.content.*;
 
 public class ChatListAdapter extends BaseAdapter {
 	private Context context;

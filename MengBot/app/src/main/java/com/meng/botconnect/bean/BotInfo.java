@@ -65,14 +65,13 @@ public class BotInfo {
 
 	public void setOnLoginQQ(final long onLoginQQ) {
 		this.onLoginQQ = onLoginQQ;
-		View v=MainActivity2.instance.headView;
-		final TextView qq=(TextView) v.findViewById(R.id.lv_drawer_headTextView_qq);
+		final View v=MainActivity2.instance.headView;
 		MainActivity2.instance.runOnUiThread(new Runnable(){
 
 				@Override
 				public void run() {
 					MainActivity2.instance.addHeaderView();
-					qq.setText(String.valueOf(onLoginQQ));
+					((TextView) v.findViewById(R.id.lv_drawer_headTextView_qq)).setText(String.valueOf(onLoginQQ));
 				}
 			});
 

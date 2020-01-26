@@ -9,18 +9,12 @@ import android.view.*;
 import android.widget.*;
 import android.widget.AdapterView.*;
 import com.google.gson.*;
-import com.google.gson.reflect.*;
 import com.meng.botconnect.bean.*;
 import com.meng.botconnect.fragment.*;
 import com.meng.botconnect.lib.*;
 import com.meng.botconnect.network.*;
-import java.io.*;
-import java.lang.reflect.*;
-import java.nio.charset.*;
 import java.util.*;
 import java.util.concurrent.*;
-
-import com.meng.botconnect.bean.Member;
 
 public class MainActivity2 extends Activity {
 	public static MainActivity2 instance;
