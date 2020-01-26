@@ -13,23 +13,44 @@ import java.util.*;
 
 public class GroupListAdapter extends BaseAdapter {
 	private Context context;
-	private ArrayList<Group> infosList;
+	private ArrayList<Group> allGroups;
+	private ArrayList<Group> nowShow = new ArrayList<>();
 
-	public GroupListAdapter(Context context, ArrayList<Group> infosSet) {
+	public GroupListAdapter(Context context, ArrayList<Group> allGroups) {
 		this.context = context;
-		this.infosList = infosSet;
+		this.allGroups = allGroups;
+		for (Group g:allGroups) {
+			if (g.messageList.size() == 0) {
+				continue;
+			}
+			nowShow.add(g);
+		}
+	}
+
+	@Override
+	public void notifyDataSetChanged() {
+		nowShow.clear();
+		for (Group g:allGroups) {
+			if (g.messageList.size() == 0) {
+				continue;
+			}
+			if (!g.removeByUser) {
+				nowShow.add(g);
+			}
+		}
+		super.notifyDataSetChanged();
 	}
 
 	public int getCount() {
-		return infosList.size();
+		return nowShow.size();
 	}
 
 	public Object getItem(int position) {
-		return infosList.get(position);
+		return nowShow.get(position);
 	}
 
 	public long getItemId(int position) {
-		return infosList.get(position).hashCode();
+		return nowShow.get(position).hashCode();
 	}
 
 	public View getView(final int position, View convertView, ViewGroup parent) {
@@ -37,31 +58,51 @@ public class GroupListAdapter extends BaseAdapter {
 		if (convertView == null) {
 			convertView = ((Activity)context).getLayoutInflater().inflate(R.layout.group_list_item, null);
 			holder = new ViewHolder();
-			holder.imageViewQQHead = (ImageView) convertView.findViewById(R.id.group_list_itemImageView);
-			holder.textViewName = (TextView) convertView.findViewById(R.id.group_list_itemTextView);
+			holder.ivHead = (ImageView) convertView.findViewById(R.id.group_list_itemImageView);
+			holder.tvGroupName = (TextView) convertView.findViewById(R.id.group_list_itemTextViewGroupName);
+			holder.tvGid = (TextView) convertView.findViewById(R.id.group_list_itemTextViewGid);
+			holder.tvMsg = (TextView) convertView.findViewById(R.id.group_list_itemTextViewMsg);
 			convertView.setTag(holder);
 		} else {
 			holder = (ViewHolder) convertView.getTag();
 		}
-		final Group group=infosList.get(position);
-		holder.textViewName.setText(group.name);
+		final Group group=nowShow.get(position);
+		BotMessage bm=group.messageList.get(group.messageList.size() - 1);
+
+		RanConfigBean rcf=MainActivity2.instance.botData.ranConfig;
+		if (rcf.masterList.contains(bm.getFromQQ())) {
+			holder.tvMsg.setTextColor(Color.MAGENTA);
+		} else if (rcf.adminList.contains(bm.getFromQQ())) {
+			holder.tvMsg.setTextColor(Color.GREEN);
+		} else {
+			if (MainActivity.sharedPreference.getBoolean("useLightTheme", true)) {
+				holder.tvMsg.setTextColor(Color.BLACK);
+			} else {
+				holder.tvMsg.setTextColor(Color.WHITE);
+			}
+		}
+		holder.tvGroupName.setText(group.name);
+		holder.tvGid.setText(String.valueOf(group.id));
+		holder.tvMsg.setText(bm.getUserName() + ":" + bm.getMsg());
 		File qqImageFile = new File(MainActivity2.mainFolder + "group/" + group.id + ".jpg");
 		if (qqImageFile.exists()) {
-			holder.imageViewQQHead.setImageBitmap(BitmapFactory.decodeFile(qqImageFile.getAbsolutePath()));
+			holder.ivHead.setImageBitmap(BitmapFactory.decodeFile(qqImageFile.getAbsolutePath()));
 		} else {
-			MainActivity2.instance.threadPool.execute(new DownloadImageRunnable(context, holder.imageViewQQHead, group.id, 0));
+			MainActivity2.instance.threadPool.execute(new DownloadImageRunnable(context, holder.ivHead, group.id, 0));
 		}
-		holder.imageViewQQHead.setOnClickListener(new View.OnClickListener() {
+		holder.ivHead.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					MainActivity2.instance.threadPool.execute(new DownloadImageRunnable(context, holder.imageViewQQHead, group.id, 0));
+					MainActivity2.instance.threadPool.execute(new DownloadImageRunnable(context, holder.ivHead, group.id, 0));
 				}
 			});
 		return convertView;
 	}
 
 	private final class ViewHolder {
-		private ImageView imageViewQQHead;
-		private TextView textViewName;
+		private ImageView ivHead;
+		private TextView tvGroupName;
+		private TextView tvGid;
+		private TextView tvMsg;
 	}
 }

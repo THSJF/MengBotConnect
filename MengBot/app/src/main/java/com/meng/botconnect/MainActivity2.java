@@ -26,7 +26,7 @@ public class MainActivity2 extends Activity {
     private RelativeLayout rt;
     private ActionBarDrawerToggle mDrawerToggle;
     private DrawerArrowDrawable drawerArrow;
-    private GroupListFragment messageFragment;
+    public GroupListFragment messageFragment;
     private StatusFragment statusFragment;
     private SettingsFragment settingsFragment;
     public TextView rightText;
@@ -40,6 +40,7 @@ public class MainActivity2 extends Activity {
 	public ActionBar ab;
 	public BotData botData=new BotData();
 	public Gson gson;
+	public Runnable onBackPressRunable=null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +85,8 @@ public class MainActivity2 extends Activity {
 						botData.addGroup(g);
 					}
 					g.addMessage(bm);
+					g.removeByUser = false;
+					botData.groupList.add(0, botData.groupList.remove(botData.groupList.indexOf(g)));
 					if (g.getMenberByQQ(bm.getFromQQ()) == null) {
 						CQ.getGroupMemberInfo(g.id, bm.getFromQQ());
 					}
@@ -207,7 +210,8 @@ public class MainActivity2 extends Activity {
         lvDrawer = (ListView) findViewById(R.id.navdrawer);
     }
 
-    private void initGroupList(boolean showNow) {
+    public void initGroupList(boolean showNow) {
+		onBackPressRunable = null;
         FragmentTransaction transactionWelcome = fragmentManager.beginTransaction();
         if (messageFragment == null) {
             messageFragment = new GroupListFragment();
@@ -297,15 +301,18 @@ public class MainActivity2 extends Activity {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_MENU) {
-            if (mDrawerLayout.isDrawerOpen(lvDrawer)) {
-                mDrawerLayout.closeDrawer(lvDrawer);
-            } else {
-                mDrawerLayout.openDrawer(lvDrawer);
-            }
-            return true;
-        }
-        return super.onKeyDown(keyCode, event);
+        if (onBackPressRunable == null) {
+			if (keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_MENU) {
+				if (mDrawerLayout.isDrawerOpen(lvDrawer)) {
+					mDrawerLayout.closeDrawer(lvDrawer);
+				} else {
+					mDrawerLayout.openDrawer(lvDrawer);
+				}
+			}
+		} else {
+			runOnUiThread(onBackPressRunable);
+		}
+        return true;
     }
 }
 

@@ -10,8 +10,9 @@ public class Group {
 
     public long id;
     public String name;
+	public boolean removeByUser = false;
 	private ConcurrentHashMap<Long,Member> memberSet=new ConcurrentHashMap<>();
-	private ArrayList<BotMessage> messageList=new ArrayList<>();
+	public ArrayList<BotMessage> messageList=new ArrayList<>();
 
 	public HashSet<Long> onGettingInfo=new HashSet<>();
     public Group() {
@@ -24,10 +25,6 @@ public class Group {
 
 	public void addMessage(BotMessage bm) {
 		messageList.add(bm);
-	}
-
-	public ArrayList<BotMessage> getMessageList() {
-		return messageList;
 	}
 
 	public void addMember(Member mToAdd) {

@@ -21,7 +21,7 @@ public class ChatFragment extends Fragment {
 
 	private Group group;
 	public ListView lvMsg;
-	private EditText etMsgToSend;
+	public EditText etMsgToSend;
 	private ImageButton ibSend;
 
 	public ChatFragment(Group g) {
@@ -96,8 +96,12 @@ public class ChatFragment extends Fragment {
 		lvMsg = (ListView) view.findViewById(R.id.chat_viewListView);
 		etMsgToSend = (EditText) view.findViewById(R.id.chat_viewEditText);
 		ibSend = (ImageButton) view.findViewById(R.id.chat_viewImageButton);
+		TextView tvGName=(TextView) view.findViewById(R.id.chat_viewTextViewGname);
+		TextView tvGid=(TextView) view.findViewById(R.id.chat_viewTextViewGid);
+		tvGName.setText(group.name);
+		tvGid.setText(String.valueOf(group.id));
 		MainActivity2.instance.CQ.getGroupMemberInfo(group.id, MainActivity2.nowBot.getOnLoginQQ());
-		lvMsg.setAdapter(new ChatListAdapter(this.getActivity(), group.getMessageList()));
+		lvMsg.setAdapter(new ChatListAdapter(this, group.messageList));
 		lvMsg.setOnItemLongClickListener(new OnItemLongClickListener(){
 
 				@Override
@@ -150,6 +154,8 @@ public class ChatFragment extends Fragment {
 				@Override
 				public void onItemClick(AdapterView<?> p1, View p2, int p3, long p4) {
 					LogTool.t(getActivity(), "click");
+					BotMessage bm=(BotMessage) p1.getAdapter().getItem(p3);
+					showText(bm);
 				}
 			});
 		ibSend.setOnClickListener(new OnClickListener(){
@@ -204,5 +210,14 @@ public class ChatFragment extends Fragment {
 					MainActivity2.instance.CQ.setGroupCard(group.id, bm.getFromQQ(), et.getText().toString());
 				}
 			}).setNegativeButton("取消", null).show();
+	}
+
+	public void showText(final BotMessage bm) {
+		TextView tv=new TextView(getActivity());
+		tv.setText(String.format("群:%d\n用户:%s(%d)\n内容:%s", bm.getFromQQ(), bm.getUserName(), bm.getFromQQ(), bm.getMsg()));
+		new AlertDialog.Builder(getActivity()).
+			setTitle("消息").
+			setView(tv)
+			.setPositiveButton("确定", null).show();
 	}
 }

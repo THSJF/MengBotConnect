@@ -1,22 +1,22 @@
 package com.meng.botconnect.adapter;
 
-import android.app.*;
-import android.content.*;
 import android.graphics.*;
 import android.view.*;
+import android.view.View.*;
 import android.widget.*;
 import com.meng.botconnect.*;
 import com.meng.botconnect.bean.*;
+import com.meng.botconnect.fragment.*;
 import com.meng.botconnect.network.*;
 import java.io.*;
 import java.util.*;
 
 public class ChatListAdapter extends BaseAdapter {
-	private Context context;
+	private ChatFragment fragment;
 	private ArrayList<BotMessage> infosList;
 
-	public ChatListAdapter(Context context, ArrayList<BotMessage> infosSet) {
-		this.context = context;
+	public ChatListAdapter(ChatFragment context, ArrayList<BotMessage> infosSet) {
+		this.fragment = context;
 		this.infosList = infosSet;
 	}
 
@@ -35,7 +35,7 @@ public class ChatListAdapter extends BaseAdapter {
 	public View getView(final int position, View convertView, ViewGroup parent) {
 		final ViewHolder holder;
 		if (convertView == null) {
-			convertView = ((Activity)context).getLayoutInflater().inflate(R.layout.chat_list_item, null);
+			convertView = fragment.getActivity().getLayoutInflater().inflate(R.layout.chat_list_item, null);
 			holder = new ViewHolder();
 			holder.imageViewQQHead = (ImageView) convertView.findViewById(R.id.chat_list_itemImageView);
 			holder.textViewName = (TextView) convertView.findViewById(R.id.chat_list_itemTextViewUserName);
@@ -47,9 +47,9 @@ public class ChatListAdapter extends BaseAdapter {
 		final BotMessage msg = infosList.get(position);
 		String un=msg.getUserName();
 		RanConfigBean rcf=MainActivity2.instance.botData.ranConfig;
-		if (rcf.adminList.contains(msg.getFromQQ())) {
+		if (rcf.masterList.contains(msg.getFromQQ())) {
 			holder.textViewName.setTextColor(Color.MAGENTA);
-		} else if (rcf.masterList.contains(msg.getFromQQ())) {
+		} else if (rcf.adminList.contains(msg.getFromQQ())) {
 			holder.textViewName.setTextColor(Color.GREEN);
 		} else {
 			if (MainActivity.sharedPreference.getBoolean("useLightTheme", true)) {
@@ -64,15 +64,24 @@ public class ChatListAdapter extends BaseAdapter {
 		if (qqImageFile.exists()) {
 			holder.imageViewQQHead.setImageBitmap(BitmapFactory.decodeFile(qqImageFile.getAbsolutePath()));
 		} else  {
-			MainActivity2.instance.threadPool.execute(new DownloadImageRunnable(context, holder.imageViewQQHead, msg.getFromQQ(), 1));
+			MainActivity2.instance.threadPool.execute(new DownloadImageRunnable(fragment.getActivity(), holder.imageViewQQHead, msg.getFromQQ(), 1));
 		}
 		holder.imageViewQQHead.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					MainActivity2.instance.threadPool.execute(new DownloadImageRunnable(context, holder.imageViewQQHead, msg.getFromQQ(), 1));
+					MainActivity2.instance.threadPool.execute(new DownloadImageRunnable(fragment.getActivity(), holder.imageViewQQHead, msg.getFromQQ(), 1));
 				}
 			});
+		holder.imageViewQQHead.setOnLongClickListener(new OnLongClickListener(){
 
+				@Override
+				public boolean onLongClick(View p1) {
+					fragment.etMsgToSend.append("[CQ:at,qq=");
+					fragment.etMsgToSend.append(String.valueOf(msg.getFromQQ()));
+					fragment.etMsgToSend.append("]");
+					return true;
+				}
+			});
 		return convertView;
 	}
 

@@ -25,7 +25,11 @@
 			android:layout_height="wrap_content"
 			android:layout_gravity="top"
 			android:textAppearance="?android:attr/textAppearanceListItemSmall"
-			android:text="正在获取"/>
+			android:text="正在获取"
+			android:enabled="true"
+            android:focusable="true"
+            android:longClickable="true"
+            android:textIsSelectable="true" />
 
 		<TextView
 			android:id="@+id/lv_drawer_headTextView_qq"
@@ -33,7 +37,11 @@
 			android:layout_height="wrap_content"
 			android:layout_gravity="bottom"
 			android:textAppearance="?android:attr/textAppearanceListItemSmall"
-			android:text="正在获取"/>
+			android:text="正在获取"
+			android:enabled="true"
+            android:focusable="true"
+            android:longClickable="true"
+            android:textIsSelectable="true" />
 
 		<TextView
 			android:id="@+id/lv_drawer_headTextView_group"
@@ -41,7 +49,11 @@
 			android:layout_height="wrap_content"
 			android:layout_gravity="bottom"
 			android:textAppearance="?android:attr/textAppearanceListItemSmall"
-			android:text="正在获取"/>
+			android:text="正在获取"
+			android:enabled="true"
+            android:focusable="true"
+            android:longClickable="true"
+            android:textIsSelectable="true" />
 
 	</LinearLayout>
 

@@ -74,7 +74,6 @@ public class BotInfo {
 					((TextView) v.findViewById(R.id.lv_drawer_headTextView_qq)).setText(String.valueOf(onLoginQQ));
 				}
 			});
-
 		final ImageView head=(ImageView) v.findViewById(R.id.lv_drawer_headImageView);
 		final File fHeadImage = new File(MainActivity2.mainFolder + "user/" + onLoginQQ + ".jpg");
 		if (fHeadImage.exists()) {
