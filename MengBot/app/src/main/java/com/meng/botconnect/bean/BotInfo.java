@@ -13,6 +13,63 @@ public class BotInfo {
 	private String cookie="";
 	private int csrfToken;
 	private int groupCount;
+	private TextView qq;
+	private TextView nick;
+	private TextView groups;
+	private TextView sendToBot;
+	private TextView recFromBot;
+	private TextView msgRec;
+	private TextView msgCmd;
+	private TextView msgSend;
+	private ImageView head;
+	private BotMsgInfo[] infos=new BotMsgInfo[60];
+	private int dataPointer=0;
+	private BotMsgInfo infoMinute = new BotMsgInfo();
+	public BotInfo(View v) {
+		qq = (TextView) v.findViewById(R.id.lv_drawer_headTextView_qq);
+		nick = (TextView) v.findViewById(R.id.lv_drawer_headTextView_nick);
+		groups = (TextView) v.findViewById(R.id.lv_drawer_headTextView_group);
+		sendToBot = (TextView) v.findViewById(R.id.lv_drawer_headTextViewSendToBot);
+		recFromBot = (TextView) v.findViewById(R.id.lv_drawer_headTextViewRecFromBot);
+		msgRec = (TextView) v.findViewById(R.id.lv_drawer_headTextViewMsgRec);
+		msgCmd = (TextView) v.findViewById(R.id.lv_drawer_headTextViewMsgCmd);
+		msgSend = (TextView) v.findViewById(R.id.lv_drawer_headTextViewMsgSend);
+		head = (ImageView) v.findViewById(R.id.lv_drawer_headImageView);
+		for (int i=0;i < 60;++i) {
+			infos[i] = new BotMsgInfo();
+		}
+	}
+
+	public void setMsgInfo(int a, int b, int c, int d, int e) {
+		if (dataPointer == 60) {
+			dataPointer = 0;
+		}
+		BotMsgInfo bmi=infos[dataPointer++];
+		bmi.sendTo = a;
+		bmi.recFrom = b;
+		bmi.msgPerSec = c;
+		bmi.msgCmdPerSec = d;
+		bmi.msgSendPerSec = e;
+		infoMinute.reset();
+		for (BotMsgInfo bi:infos) {
+			infoMinute.sendTo += bi.sendTo;
+			infoMinute.recFrom += bi.recFrom;
+			infoMinute.msgPerSec += bi.msgPerSec;
+			infoMinute.msgCmdPerSec += bi.msgCmdPerSec;
+			infoMinute.msgSendPerSec += bi.msgSendPerSec;
+		}
+		MainActivity2.instance.runOnUiThread(new Runnable(){
+
+				@Override
+				public void run() {
+					sendToBot.setText("发送至其他bot:" + infoMinute.sendTo + "/min");
+					recFromBot.setText("接收自其他bot:" + infoMinute.recFrom + "/min");
+					msgRec.setText("群消息数:" + infoMinute.msgPerSec + "/min");
+					msgCmd.setText("命令消息数:" + infoMinute.msgCmdPerSec + "/min");
+					msgSend.setText("发送消息数:" + infoMinute.msgSendPerSec + "/min");
+				}
+			});
+	}
 
 	public void setGroupCount(final int groupCount) {
 		this.groupCount = groupCount;
@@ -21,7 +78,7 @@ public class BotInfo {
 				@Override
 				public void run() {
 					MainActivity2.instance.addHeaderView();
-					((TextView) MainActivity2.instance.headView.findViewById(R.id.lv_drawer_headTextView_group)).setText("群组数量:" + groupCount);
+					groups.setText("群组数量:" + groupCount);
 				}
 			});
 	}
@@ -54,7 +111,7 @@ public class BotInfo {
 				@Override
 				public void run() {
 					MainActivity2.instance.addHeaderView();
-					((TextView)MainActivity2.instance.headView.findViewById(R.id.lv_drawer_headTextView_nick)).setText(onLoginNick);
+					nick.setText(onLoginNick);
 				}
 			});
 	}
@@ -65,16 +122,14 @@ public class BotInfo {
 
 	public void setOnLoginQQ(final long onLoginQQ) {
 		this.onLoginQQ = onLoginQQ;
-		final View v=MainActivity2.instance.headView;
 		MainActivity2.instance.runOnUiThread(new Runnable(){
 
 				@Override
 				public void run() {
 					MainActivity2.instance.addHeaderView();
-					((TextView) v.findViewById(R.id.lv_drawer_headTextView_qq)).setText(String.valueOf(onLoginQQ));
+					qq.setText(String.valueOf(onLoginQQ));
 				}
 			});
-		final ImageView head=(ImageView) v.findViewById(R.id.lv_drawer_headImageView);
 		final File fHeadImage = new File(MainActivity2.mainFolder + "user/" + onLoginQQ + ".jpg");
 		if (fHeadImage.exists()) {
 			MainActivity2.instance.runOnUiThread(new Runnable(){

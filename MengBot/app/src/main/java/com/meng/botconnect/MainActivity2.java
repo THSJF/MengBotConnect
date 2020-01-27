@@ -18,7 +18,7 @@ import java.util.concurrent.*;
 
 public class MainActivity2 extends Activity {
 	public static MainActivity2 instance;
-	public static BotInfo nowBot=new BotInfo();
+	public static BotInfo nowBot;
     private final String logString = "以下为操作记录：\n";
     private DrawerLayout mDrawerLayout;
     private ListView lvDrawer;
@@ -53,7 +53,8 @@ public class MainActivity2 extends Activity {
         ab.setHomeButtonEnabled(true);
 		findViews();
 		headView = getLayoutInflater().inflate(R.layout.lv_drawer_head, null);
-        rightText.setText(logString);
+        nowBot = new BotInfo(headView);
+		rightText.setText(logString);
         fragmentManager = getFragmentManager();
         setListener();
         changeTheme();

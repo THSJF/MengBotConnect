@@ -61,42 +61,42 @@ public class CoolQ extends WebSocketClient {
 
 	@Override
 	public void onMessage(ByteBuffer bs) {	
-		BotDataPack received=BotDataPack.decode(bs.array());
-		if (BotDataPack.onGroupMsg == received.getOpCode()) {
-			while (received.hasNext()) {
-				MainActivity2.instance.addMsg(new BotMessage(received.readInt(), received.readLong(), received.readLong(), received.readString(), received.readInt()));
+		BotDataPack rec=BotDataPack.decode(bs.array());
+		if (BotDataPack.onGroupMsg == rec.getOpCode()) {
+			while (rec.hasNext()) {
+				MainActivity2.instance.addMsg(new BotMessage(rec.readInt(), rec.readLong(), rec.readLong(), rec.readString(), rec.readInt()));
 			}
 		} else {
-			switch (received.getOpCode()) {
+			switch (rec.getOpCode()) {
 				case BotDataPack.opLoginQQ:
-					MainActivity2.nowBot.setOnLoginQQ(received.readLong());
+					MainActivity2.nowBot.setOnLoginQQ(rec.readLong());
 					break;
 				case BotDataPack.opLoginNick:
-					MainActivity2.nowBot.setOnLoginNick(received.readString());
+					MainActivity2.nowBot.setOnLoginNick(rec.readString());
 					break;
 				case BotDataPack.opCookies:
-					MainActivity2.nowBot.setCookie(received.readString());
+					MainActivity2.nowBot.setCookie(rec.readString());
 					break;
 				case BotDataPack.opCsrfToken:
-					MainActivity2.nowBot.setCsrfToken(received.readInt());
+					MainActivity2.nowBot.setCsrfToken(rec.readInt());
 					break;
 				case BotDataPack.opGroupMemberInfo:
 					Member m=new Member(
-						received.readLong(),
-						received.readLong(),
-						received.readString(),
-						received.readString(),
-						received.readInt(),
-						received.readInt(),
-						received.readString(),
-						new Date(received.readLong()),
-						new Date(received.readLong()),
-						received.readString(),
-						received.readInt(),
-						received.readString(),
-						new Date(received.readLong()),
-						received.readBoolean(),
-						received.readBoolean());
+						rec.readLong(),
+						rec.readLong(),
+						rec.readString(),
+						rec.readString(),
+						rec.readInt(),
+						rec.readInt(),
+						rec.readString(),
+						new Date(rec.readLong()),
+						new Date(rec.readLong()),
+						rec.readString(),
+						rec.readInt(),
+						rec.readString(),
+						new Date(rec.readLong()),
+						rec.readBoolean(),
+						rec.readBoolean());
 					MainActivity2.instance.addGroupMember(m);
 					break;
 					/*	case BotDataPack.opFriendAddRequest:
@@ -104,23 +104,23 @@ public class CoolQ extends WebSocketClient {
 					 break;*/
 				case BotDataPack.opGroupMemberList:
 					int mc=0;
-					while (received.hasNext()) {
+					while (rec.hasNext()) {
 						Member m2=new Member(
-							received.readLong(),
-							received.readLong(),
-							received.readString(),
-							received.readString(),
-							received.readInt(),
-							received.readInt(),
-							received.readString(),
-							new Date(received.readLong()),
-							new Date(received.readLong()),
-							received.readString(),
-							received.readInt(),
-							received.readString(),
-							new Date(received.readLong()),
-							received.readBoolean(),
-							received.readBoolean());
+							rec.readLong(),
+							rec.readLong(),
+							rec.readString(),
+							rec.readString(),
+							rec.readInt(),
+							rec.readInt(),
+							rec.readString(),
+							new Date(rec.readLong()),
+							new Date(rec.readLong()),
+							rec.readString(),
+							rec.readInt(),
+							rec.readString(),
+							new Date(rec.readLong()),
+							rec.readBoolean(),
+							rec.readBoolean());
 						MainActivity2.instance.addGroupMember(m2);
 						++mc;
 					}
@@ -128,20 +128,22 @@ public class CoolQ extends WebSocketClient {
 					break;
 				case BotDataPack.opGroupList:
 					int gc=0;
-					while (received.hasNext()) {
+					while (rec.hasNext()) {
 						Group g=new Group();
-						g.id = received.readLong();
-						g.name = received.readString();
+						g.id = rec.readLong();
+						g.name = rec.readString();
 						MainActivity2.instance.botData.addGroup(g);
 						++gc;
 					}
 					MainActivity2.nowBot.setGroupCount(gc);
 					break;
 				case BotDataPack.getConfig:
-					MainActivity2.instance.botData.ranConfig = MainActivity2.instance.gson.fromJson(received.readString(), new TypeToken<RanConfigBean>() {}.getType());
+					MainActivity2.instance.botData.ranConfig = MainActivity2.instance.gson.fromJson(rec.readString(), new TypeToken<RanConfigBean>() {}.getType());
+					break;
+				case BotDataPack.onPerSecMsgInfo:
+					MainActivity2.instance.nowBot.setMsgInfo(rec.readInt(), rec.readInt(), rec.readInt(), rec.readInt(), rec.readInt());
 					break;
 			}
-
 		}
 
 
