@@ -1,4 +1,4 @@
-package com.addques.sanae;
+package com.meng.botconnect.bean;
 
 import java.util.*;
 

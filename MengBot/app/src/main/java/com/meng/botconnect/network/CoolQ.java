@@ -1,9 +1,11 @@
 package com.meng.botconnect.network;
+import android.app.*;
+import android.os.*;
 import com.google.gson.reflect.*;
 import com.meng.botconnect.*;
 import com.meng.botconnect.bean.*;
 import com.meng.botconnect.lib.*;
-import java.lang.reflect.*;
+import java.io.*;
 import java.net.*;
 import java.nio.*;
 import java.util.*;
@@ -11,10 +13,10 @@ import org.java_websocket.client.*;
 import org.java_websocket.exceptions.*;
 import org.java_websocket.handshake.*;
 
-import com.meng.botconnect.bean.Member;
-
 
 public class CoolQ extends WebSocketClient {
+
+	String folder=Environment.getExternalStorageDirectory() + "/pictures/sanae/questions/";
 
 	public static String ip=null;
 	public static String port=null;
@@ -61,7 +63,7 @@ public class CoolQ extends WebSocketClient {
 
 	@Override
 	public void onMessage(ByteBuffer bs) {	
-		BotDataPack rec=BotDataPack.decode(bs.array());
+		final BotDataPack rec=BotDataPack.decode(bs.array());
 		if (BotDataPack.onGroupMsg == rec.getOpCode()) {
 			while (rec.hasNext()) {
 				MainActivity2.instance.addMsg(new BotMessage(rec.readInt(), rec.readLong(), rec.readLong(), rec.readString(), rec.readInt()));
@@ -143,6 +145,47 @@ public class CoolQ extends WebSocketClient {
 				case BotDataPack.onPerSecMsgInfo:
 					MainActivity2.instance.nowBot.setMsgInfo(rec.readInt(), rec.readInt(), rec.readInt(), rec.readInt(), rec.readInt());
 					break;
+				case BotDataPack.opTextNotify:
+					LogTool.t(MainActivity2.instance, rec.readString());
+					break;
+				case BotDataPack.opAllQuestion:
+					MainActivity2.instance.quesFragment.alAllQa.clear();
+					readQAs(rec);
+					MainActivity2.instance.runOnUiThread(new Runnable(){
+
+							@Override
+							public void run() {
+								MainActivity2.instance.quesFragment.quesAdapter.notifyDataSetChanged();
+							}
+						});
+					break;
+				case BotDataPack.opQuestionPic:
+					File ffo=new File(folder);
+					if (!ffo.exists()) {
+						ffo.mkdirs();
+					}
+					final int id=rec.readInt();
+					new Thread(new Runnable(){
+
+							@Override
+							public void run() {
+								rec.readFile(new File(folder + id + ".jpg"));
+							}
+						}).start();
+					break;
+
+					/*case BotDataPack.getCqImgFile:
+					 File f=new File(MainActivity2.mainFolder + "/cqimg/" + rec.readString());
+					 rec.readFile(f);
+					 /*	File iniFile = new File(path);
+					 if (iniFile.exists() && iniFile.canRead()){
+					 try {
+					 new CQImage(new IniFile(iniFile));
+					 } catch (IOException e) {}
+					 } else {
+					 LogTool.i(MainActivity2.instance,file+".cqimg不存在");
+					 }
+					 break;*/
 			}
 		}
 
@@ -184,7 +227,6 @@ public class CoolQ extends WebSocketClient {
 		BotDataPack bdp=BotDataPack.encode(BotDataPack.opGroupMsg);
 		bdp.write(groupId).write(msg);
 		send(bdp);
-		MainActivity2.instance.addMsg(groupId, MainActivity2.nowBot.getOnLoginQQ(), msg);
 	}
 
     public void sendDiscussMsg(long discussionId, String msg) {
@@ -290,6 +332,7 @@ public class CoolQ extends WebSocketClient {
 	}
 
     public void getGroupMemberList(long groupId) {
+		LogTool.t(MainActivity2.instance, "获取用户列表:" + groupId);
 		BotDataPack bdp=BotDataPack.encode(BotDataPack.opGroupMemberList);
 		bdp.write(groupId);
 		send(bdp);
@@ -298,6 +341,34 @@ public class CoolQ extends WebSocketClient {
     public void getGroupList() {
 		send(BotDataPack.encode(BotDataPack.opGroupList));
     }
+
+	private void readQAs(BotDataPack sdp) {
+		while (sdp.hasNext()) {
+			QA qa=new QA();
+			qa.setFlag(sdp.readInt());
+			qa.l = sdp.readInt();
+			qa.q = sdp.readString();
+			File img=new File(folder + qa.getId() + ".jpg");
+			if (qa.q.contains("(image)")) {
+				if (!img.exists() || (int)img.length() != qa.l) {
+					BotDataPack sa=BotDataPack.encode(BotDataPack.opQuestionPic);
+					sa.write(qa.getId());
+					send(sa.getData());
+				}
+			}
+			int anss=sdp.readInt();
+			qa.setTrueAnsFlag(sdp.readInt());
+			for (int i=0;i < anss;++i) {
+				qa.a.add(sdp.readString());
+			}
+			qa.r = sdp.readString();
+			MainActivity2.instance.quesFragment.alAllQa.add(qa);
+		}
+	}
+
+	/*public void getCqImgFile(String fileName) {
+	 send(BotDataPack.encode(BotDataPack.getCqImgFile).write(fileName));
+	 }*/
 
 	/* public Anonymous getAnonymous(String source) {
 	 return Anonymous.toAnonymous(base64Decode(source));

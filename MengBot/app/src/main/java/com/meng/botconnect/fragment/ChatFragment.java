@@ -107,7 +107,7 @@ public class ChatFragment extends Fragment {
 				@Override
 				public boolean onItemLongClick(AdapterView<?> p1, View p2, int p3, long p4) {
 					final BotMessage bm=(BotMessage) p1.getAdapter().getItem(p3);
-					final String[] cities = {"禁言","设置群名片","设置群头衔","点赞","设为管理员","取消管理员","踢出本群"};
+					final String[] cities = {"禁言","设置群名片","设置群头衔","点赞","撤回本条消息","设为管理员","取消管理员","踢出本群"};
 					new AlertDialog.Builder(getActivity()).
 						setIcon(R.drawable.ic_launcher).
 						setTitle("选择操作").
@@ -128,12 +128,22 @@ public class ChatFragment extends Fragment {
 										MainActivity2.instance.CQ.sendLike(bm.getFromQQ(), 10);
 										break;
 									case 4:
-										MainActivity2.instance.CQ.setGroupAdmin(bm.getGroup(), bm.getFromQQ(), true);
+										new AlertDialog.Builder(getActivity())
+											.setTitle(String.format("确定撤回消息%s(id:%d)吗?", bm.getMsg(), bm.getMsgId()))
+											.setPositiveButton("是", new DialogInterface.OnClickListener() {
+												@Override
+												public void onClick(DialogInterface p1, int p2) {
+													MainActivity2.instance.CQ.deleteMsg(bm.getMsgId());	
+												}
+											}).setNegativeButton("否", null).show();
 										break;
 									case 5:
-										MainActivity2.instance.CQ.setGroupAdmin(bm.getGroup(), bm.getFromQQ(), false);
+										MainActivity2.instance.CQ.setGroupAdmin(bm.getGroup(), bm.getFromQQ(), true);
 										break;
 									case 6:
+										MainActivity2.instance.CQ.setGroupAdmin(bm.getGroup(), bm.getFromQQ(), false);
+										break;
+									case 7:
 										new AlertDialog.Builder(getActivity())
 											.setTitle("确定踢出吗")
 											.setPositiveButton("是", new DialogInterface.OnClickListener() {

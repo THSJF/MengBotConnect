@@ -23,19 +23,18 @@ public class SanaeConnect extends WebSocketClient {
 
 	@Override
 	public void onOpen(ServerHandshake serverHandshake) {
-		TabActivity.ins.showToast("连接到苗");
-		TabActivity.ins.sanaeConnect.send(SanaeDataPack.encode(SanaeDataPack.opAllQuestion).getData());
-	}
+		TabActivity.ins.sanaeConnect.send(BotDataPack.encode(BotDataPack.opAllQuestion).getData());
+		}
 
 	@Override
 	public void onMessage(ByteBuffer bs) {	
-		final SanaeDataPack dataPackRecieved=SanaeDataPack.decode(bs.array());
-		SanaeDataPack dataToSend=null;
+		final BotDataPack dataPackRecieved=BotDataPack.decode(bs.array());
+		BotDataPack dataToSend=null;
 		switch (dataPackRecieved.getOpCode()) {
-			case SanaeDataPack.opNotification:
+			case BotDataPack.opTextNotify:
 				TabActivity.ins.showToast(dataPackRecieved.readString());
 				break;
-			case SanaeDataPack.opAllQuestion:
+			case BotDataPack.opAllQuestion:
 				TabActivity.ins.alAllQa.clear();
 				readQAs(dataPackRecieved);
 				TabActivity.ins.runOnUiThread(new Runnable(){
@@ -46,7 +45,7 @@ public class SanaeConnect extends WebSocketClient {
 						}
 					});
 				break;
-			case SanaeDataPack.opQuestionPic:
+			case BotDataPack.opQuestionPic:
 				File ffo=new File(folder);
 				if (!ffo.exists()) {
 					ffo.mkdirs();
@@ -62,9 +61,6 @@ public class SanaeConnect extends WebSocketClient {
 						}
 					}).start();
 				break;
-			default:
-				dataToSend = SanaeDataPack.encode(SanaeDataPack.opNotification, dataPackRecieved);
-				dataToSend.write("操作类型错误");
 		}
 		if (dataToSend != null) {
 			try {
@@ -85,7 +81,7 @@ public class SanaeConnect extends WebSocketClient {
 	public void onError(Exception e) {
 		throw new RuntimeException(e.toString());
 	}
-	private void readQAs(SanaeDataPack sdp) {
+	private void readQAs(BotDataPack sdp) {
 		while (sdp.hasNext()) {
 			QA qa=new QA();
 			qa.setFlag(sdp.readInt());
@@ -94,13 +90,13 @@ public class SanaeConnect extends WebSocketClient {
 			File img=new File(folder + qa.getId() + ".jpg");
 			if (qa.q.contains("(image)")) {
 				if (!img.exists() || (int)img.length() != qa.l) {
-					SanaeDataPack sa=SanaeDataPack.encode(SanaeDataPack.opQuestionPic);
+					BotDataPack sa=BotDataPack.encode(BotDataPack.opQuestionPic);
 					sa.write(qa.getId());
 					send(sa.getData());
 				}
 			}
 			int anss=sdp.readInt();
-			qa.t = sdp.readInt();
+			qa.setTrueAnsFlag(sdp.readInt());
 			for (int i=0;i < anss;++i) {
 				qa.a.add(sdp.readString());
 			}

@@ -7,7 +7,9 @@ public class BotData {
 	public RanConfigBean ranConfig=new RanConfigBean();
 
 	public Group getGroup(long groupNumber) {
-		for (Group g:groupList) {
+		int s=groupList.size();
+		for (int i=0;i < s;++i) {
+			Group g=groupList.get(i);
 			if (g.id == groupNumber) {
 				return g;
 			}
@@ -16,10 +18,11 @@ public class BotData {
 	}
 
 	public void addGroup(Group gToPut) {
-		for (Group g:groupList) {
+		int s=groupList.size();
+		for (int i=0;i < s;++i) {
+			Group g=groupList.get(i);
 			if (g.id == gToPut.id) {
 				g.name = gToPut.name;
-				return;
 			}
 		}
 		groupList.add(gToPut);

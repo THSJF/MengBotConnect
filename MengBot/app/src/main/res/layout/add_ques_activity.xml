@@ -41,7 +41,7 @@
 
 				</LinearLayout>
 
-				<com.addques.ImageEdittext
+				<com.meng.botconnect.views.ImageEdittext
 					android:id="@+id/ques"
 					android:hint="问题"
 					android:layout_width="fill_parent"

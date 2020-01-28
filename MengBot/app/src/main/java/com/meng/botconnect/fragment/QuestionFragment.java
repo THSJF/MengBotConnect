@@ -1,34 +1,32 @@
-package com.addques;
+package com.meng.botconnect.fragment;
 
 import android.app.*;
 import android.content.*;
-import android.graphics.*;
-import android.net.*;
 import android.os.*;
 import android.view.*;
 import android.view.View.*;
 import android.widget.*;
 import android.widget.AdapterView.*;
-import android.widget.RadioGroup.*;
-import com.addques.sanae.*;
+import com.meng.botconnect.*;
+import com.meng.botconnect.bean.*;
+import com.meng.botconnect.lib.*;
+import com.meng.botconnect.network.*;
+import com.meng.botconnect.views.*;
 import java.io.*;
 import java.net.*;
 import java.util.*;
 
 import android.view.View.OnClickListener;
 
-public class TabActivity extends android.app.Activity {
+public class QuestionFragment extends Fragment {
 
-	public static TabActivity ins;
-
-	public static final int touhouBase=1;
+    public static final int touhouBase=1;
 	public static final int _2unDanmakuIntNew=2;
 	public static final int _2unDanmakuAll=3;
 	public static final int _2unNotDanmaku=4;
 	public static final int _2unAll=5;
 	public static final int otherDanmaku=6;
 
-	public SanaeConnect sanaeConnect;
 	public TabHost tab;
 
 	public LinearLayout llAnswers;
@@ -47,66 +45,51 @@ public class TabActivity extends android.app.Activity {
 
 	public File chooseFilePath;
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.tab_activity);
-		ins = this;
-		tab = (TabHost) findViewById(android.R.id.tabhost);
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        MainActivity2.instance.CQ.send(BotDataPack.encode(BotDataPack.opAllQuestion));
+        return inflater.inflate(R.layout.tab_activity, container, false);
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        // TODO: Implement this method
+        super.onViewCreated(view, savedInstanceState);
+        tab = (TabHost) view.findViewById(android.R.id.tabhost);
 		tab.setup();
-        LayoutInflater i=LayoutInflater.from(this); 
+        LayoutInflater i=LayoutInflater.from(getActivity()); 
 		i.inflate(R.layout.add_ques_activity, tab.getTabContentView()); 
 		i.inflate(R.layout.all_ques_activity, tab.getTabContentView());
-		btnClean = (Button) findViewById(R.id.clean);
-		btnSend = (Button) findViewById(R.id.mainButtonSend);
-		btnAdd = (Button) findViewById(R.id.add_ques_activityButtonAddAns);
-		btnSub = (Button) findViewById(R.id.add_ques_activityButtonSubAns);
-		btnImage = (Button) findViewById(R.id.add_ques_activityButton_addPic);
-		etQues = (ImageEdittext) findViewById(R.id.ques);
-		spDiffcult = (Spinner) findViewById(R.id.diff);
-		spType = (Spinner) findViewById(R.id.type);
-		spFiDiff = (Spinner) findViewById(R.id.all_ques_activitySpinner_diff);
-		spFiType = (Spinner) findViewById(R.id.all_ques_activitySpinner_type);
-		llAnswers = (LinearLayout) findViewById(R.id.add_ques_activityLinearLayoutAnswer_view);
+		btnClean = (Button) view.findViewById(R.id.clean);
+		btnSend = (Button) view.findViewById(R.id.mainButtonSend);
+		btnAdd = (Button) view.findViewById(R.id.add_ques_activityButtonAddAns);
+		btnSub = (Button) view.findViewById(R.id.add_ques_activityButtonSubAns);
+		btnImage = (Button) view.findViewById(R.id.add_ques_activityButton_addPic);
+		etQues = (ImageEdittext) view.findViewById(R.id.ques);
+		spDiffcult = (Spinner) view.findViewById(R.id.diff);
+		spType = (Spinner) view.findViewById(R.id.type);
+		spFiDiff = (Spinner) view.findViewById(R.id.all_ques_activitySpinner_diff);
+		spFiType = (Spinner) view.findViewById(R.id.all_ques_activitySpinner_type);
+		llAnswers = (LinearLayout) view.findViewById(R.id.add_ques_activityLinearLayoutAnswer_view);
 
-		etReason = (EditText)findViewById(R.id.reason);
+		etReason = (EditText)view.findViewById(R.id.reason);
 		btnSend.setOnClickListener(onClick);
 		btnClean.setOnClickListener(onClick);
 		btnImage.setOnClickListener(onClick);
 		btnAdd.setOnClickListener(onClick);
 		btnSub.setOnClickListener(onClick);
-		spDiffcult.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, new String[]{"easy","normal","hard","lunatic","overdrive","kidding"}));
-		spType.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, new String[]{"未分类","车万基础","新作整数作","官方弹幕作","官方非弹幕","官方所有","同人弹幕","luastg"}));
-		spFiDiff.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, new String[]{"all","easy","normal","hard","lunatic","overdrive","kidding"}));
-		spFiType.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, new String[]{"全部分类","未分类","车万基础","新作整数作","官方弹幕作","官方非弹幕","官方所有","同人弹幕","luastg"}));
+		spDiffcult.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_dropdown_item, new String[]{"easy","normal","hard","lunatic","overdrive","kidding"}));
+		spType.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_dropdown_item, new String[]{"未分类","车万基础","新作整数作","官方弹幕作","官方非弹幕","官方所有","同人弹幕","luastg"}));
+		spFiDiff.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_dropdown_item, new String[]{"all","easy","normal","hard","lunatic","overdrive","kidding"}));
+		spFiType.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_dropdown_item, new String[]{"全部分类","未分类","车万基础","新作整数作","官方弹幕作","官方非弹幕","官方所有","同人弹幕","luastg"}));
 		spFiType.setOnItemSelectedListener(onItemSelect);
 		spFiDiff.setOnItemSelectedListener(onItemSelect);
         tab.addTab(tab.newTabSpec("tab1").setIndicator("添加问题" , null).setContent(R.id.add_ques_activityLinearLayout));
         tab.addTab(tab.newTabSpec("tab2").setIndicator("浏览问题" , null).setContent(R.id.all_ques_activityLinearLayout));
-		try {
-			sanaeConnect = new SanaeConnect(new URI("ws://123.207.65.93:7777"));
-			sanaeConnect.connect();
-		} catch (URISyntaxException e) {
-			showToast(e.toString());
-		}
-		new Thread(new Runnable(){
-
-				@Override
-				public void run() {
-					while (true) {
-						try {
-							Thread.sleep(10000);
-							sanaeConnect.send("h");
-						} catch (Exception e) {
-							showToast("连接断开");
-							sanaeConnect.reconnect();
-						}
-					}
-				}
-			}).start();
-		lvAllQa = (ListView) findViewById(R.id.all_quesListView);
+		lvAllQa = (ListView) view.findViewById(R.id.all_quesListView);
 		nowQaList.addAll(alAllQa);
-		quesAdapter = new QuesAdapter(this, nowQaList);
+		quesAdapter = new QuesAdapter(getActivity(), nowQaList);
 		lvAllQa.setAdapter(quesAdapter);
 		lvAllQa.setOnItemClickListener(new OnItemClickListener(){
 
@@ -123,25 +106,15 @@ public class TabActivity extends android.app.Activity {
 					etQues.setText(qa.q);
 					HashSet<Integer> trueAnswers=onEdit.getTrueAns();
 					for (int i=0;i < onEdit.a.size();++i) {
-						AnswerView ansv=new AnswerView(TabActivity.this, i, onEdit.a.get(i), trueAnswers.contains(i));
+						AnswerView ansv=new AnswerView(getActivity(), i, onEdit.a.get(i), trueAnswers.contains(i));
 						llAnswers.addView(ansv);
 					}
 					etReason.setText(qa.r);
 					etQues.replaceDrawable(new File(Environment.getExternalStorageDirectory() + "/Pictures/sanae/questions/" + qa.getId() + ".jpg"));
 				}
 			});
+
 	}
-
-	public void showToast(final String s) {
-		runOnUiThread(new Runnable(){
-
-				@Override
-				public void run() {
-					Toast.makeText(TabActivity.this, s, Toast.LENGTH_SHORT).show();
-				}
-			});
-	}
-
 	OnItemSelectedListener onItemSelect=new OnItemSelectedListener(){
 
 		@Override
@@ -221,11 +194,11 @@ public class TabActivity extends android.app.Activity {
 							sdp.write(chooseFilePath);
 						}
 						try {
-							sanaeConnect.send(sdp.getData());
+							MainActivity2.instance.CQ.send(sdp.getData());
 						} catch (Exception e) {
-							showToast(e.toString());
+							LogTool.e(getActivity(), e);
 						}
-						showToast("正在发送");	
+						LogTool.t(getActivity(), "正在发送");	
 					} else if (mode == 1) {
 						onEdit.setType(spType.getSelectedItemPosition());
 						onEdit.setDifficulty(spDiffcult.getSelectedItemPosition());
@@ -252,11 +225,11 @@ public class TabActivity extends android.app.Activity {
 							sdp.write(chooseFilePath);
 						}
 						try {
-							sanaeConnect.send(sdp.getData());
+							MainActivity2.instance.CQ.send(sdp.getData());
 						} catch (Exception e) {
-							showToast(e.toString());
+							LogTool.t(getActivity(), e.toString());
 						}
-						showToast("正在发送");	
+						LogTool.t(getActivity(), "正在发送");	
 						mode = 0;
 						onEdit = null;
 						clean();
@@ -274,11 +247,11 @@ public class TabActivity extends android.app.Activity {
 						intent.addCategory(Intent.CATEGORY_OPENABLE);
 						startActivityForResult(intent, 234);
 					} else {
-						showToast("仅可以添加一张图片");
+						LogTool.t(getActivity(), "仅可以添加一张图片");
 					}
 					break;
 				case R.id.add_ques_activityButtonAddAns:
-					llAnswers.addView(new AnswerView(TabActivity.this, llAnswers.getChildCount(), "", false));
+					llAnswers.addView(new AnswerView(getActivity(), llAnswers.getChildCount(), "", false));
 					break;
 				case R.id.add_ques_activityButtonSubAns:
 					llAnswers.removeViewAt(llAnswers.getChildCount() - 1);
@@ -307,38 +280,14 @@ public class TabActivity extends android.app.Activity {
 		btnClean.setText("清空");
 	}
 
-	public void cleanNotify(int notifyId) {
-		NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-		manager.cancel(notifyId);
-	}
-
-	public void sendNotify(int notifyId) {
-		NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-		Intent intent = new Intent();
-		/* intent.setAction(intent.ACTION_CALL);
-		 intent.setData(Uri.parse("tel:10086"));
-		 */
-		// 创建意图
-		// 第一个参数：上下文
-		// 第二个参数：请求码
-		// 第三个参数：显示的次数
-		PendingIntent contentIntent = PendingIntent.getActivity(TabActivity.this, notifyId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-		Notification notification = new Notification.Builder(this)
-			.setContentTitle("问答图片接收中")
-			.setContentText(notifyId + ".jpg")
-			.setWhen(System.currentTimeMillis())
-			.setSmallIcon(R.drawable.ic_launcher)
-			.setContentIntent(contentIntent).build();
-		manager.notify(notifyId, notification);
-	}
 
 	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
-		if (resultCode == RESULT_OK) {
+		if (resultCode == Activity.RESULT_OK) {
 			switch (requestCode) {
 				case 234:
-					chooseFilePath = new File(FileChooseUtil.getInstance(this).getChooseFileResultPath(data.getData()));
+					chooseFilePath = new File(FileChooseUtil.getInstance(getActivity()).getChooseFileResultPath(data.getData()));
 					//etQues.setText(etQues.getText().toString());
 					etQues.insertImage(chooseFilePath);
 					break;

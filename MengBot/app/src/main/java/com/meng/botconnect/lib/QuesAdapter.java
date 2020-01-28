@@ -1,10 +1,14 @@
-package com.addques;
+package com.meng.botconnect.lib;
 
 import android.app.*;
 import android.graphics.*;
+import android.os.*;
 import android.view.*;
 import android.widget.*;
-import com.addques.sanae.*;
+import com.meng.botconnect.*;
+import com.meng.botconnect.bean.*;
+import com.meng.botconnect.views.*;
+import java.io.*;
 import java.util.*;
 
 public class QuesAdapter extends BaseAdapter {
@@ -36,7 +40,7 @@ public class QuesAdapter extends BaseAdapter {
 			holder.tvId = (TextView) convertView.findViewById(R.id.ques_list_itemTextView_id);
 			holder.tvDiff = (TextView) convertView.findViewById(R.id.ques_list_itemTextView_diff);
 			holder.tvType = (TextView) convertView.findViewById(R.id.ques_list_itemTextView_type);
-			holder.tvQues = (TextView) convertView.findViewById(R.id.ques_list_itemTextView_ques);
+			holder.tvQues = (ImageTextview) convertView.findViewById(R.id.ques_list_itemTextView_ques);
 			holder.tvAns = (TextView) convertView.findViewById(R.id.ques_list_itemTextView_ans);
 			holder.tvReason = (TextView) convertView.findViewById(R.id.ques_list_itemTextView_reason);
 			convertView.setTag(holder);
@@ -106,6 +110,7 @@ public class QuesAdapter extends BaseAdapter {
 		}	
 		holder.tvType.setText(stringBuilder.toString());
 		holder.tvQues.setText("问题:" + qa.q);
+		holder.tvQues.replaceDrawable(new File(Environment.getExternalStorageDirectory() + "/Pictures/sanae/questions/" + qa.getId() + ".jpg"));
 		StringBuilder sb=new StringBuilder();
 		HashSet<Integer> hi=qa.getTrueAns();
 		for (int i:hi) {
@@ -125,7 +130,7 @@ public class QuesAdapter extends BaseAdapter {
 		public TextView tvId;
 		public TextView tvDiff;
 		public TextView tvType;
-		public TextView tvQues;
+		public ImageTextview tvQues;
 		public TextView tvAns;
 		public TextView tvReason;
 	}

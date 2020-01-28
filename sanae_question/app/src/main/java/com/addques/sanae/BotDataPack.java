@@ -4,11 +4,11 @@ import com.addques.*;
 import java.io.*;
 import java.util.*;
 
-public class SanaeDataPack {
+public class BotDataPack {
 
 	public ArrayList<Byte> data=new ArrayList<>();
 	public byte[] dataArray;
-	public static final short headLength=28;
+	public static final short headLength=10;
 	public int dataPointer=0;
 
 	public static final byte typeByte=0;
@@ -21,59 +21,28 @@ public class SanaeDataPack {
 	public static final byte typeBoolean=7;
 	public static final byte typeFile=8;
 
-	public static final int opNotification=0;//通知  string
-	public static final int opAddQuestion=10;//int flag,string ques,int ansCount,string... ans,string reason
-	public static final int opAllQuestion=11;
-	public static final int opSetQuestion=12;//int flag,string ques,int ansCount,int trueAns,string... ans,string reason
-	public static final int opQuestionPic=35;//int id     file
-	
-	public static SanaeDataPack encode(int opCode) {
-		return new SanaeDataPack(opCode, System.currentTimeMillis());
+	public static final int opAddQuestion = 28;
+	public static final int opAllQuestion = 29;
+	public static final int opSetQuestion = 30;
+	public static final int opQuestionPic = 31;
+	public static final int opTextNotify = 32;
+
+	public static BotDataPack encode(int opCode) {
+		return new BotDataPack(opCode);
 	}
 
-	public static SanaeDataPack encode(SanaeDataPack dataPack) {
-		return new SanaeDataPack(dataPack);
+	public static BotDataPack decode(byte[] bytes) {
+		return new BotDataPack(bytes);
 	}
 
-	public static SanaeDataPack encode(int opCode, SanaeDataPack dataPack) {
-		return new SanaeDataPack(opCode, dataPack);
-	}
-
-	public static SanaeDataPack decode(byte[] bytes) {
-		return new SanaeDataPack(bytes);
-	}
-
-	private SanaeDataPack(int opCode, long timeStamp) {
-		//length(4) headLength(2) version(2) time(8) target/from(8) opCode(4)
+	private BotDataPack(int opCode) {
+		//length(4) version(2) opCode(4)
 		writeByteDataIntoArray(BitConverter.getBytes(0));
-		writeByteDataIntoArray(BitConverter.getBytes(headLength));
-		writeByteDataIntoArray(BitConverter.getBytes((short)4));
-		writeByteDataIntoArray(BitConverter.getBytes(timeStamp));
-		writeByteDataIntoArray(BitConverter.getBytes(0L));
+		writeByteDataIntoArray(BitConverter.getBytes((short)1));
 		writeByteDataIntoArray(BitConverter.getBytes(opCode));
 	}   
 
-	private SanaeDataPack(SanaeDataPack dataPack) {
-		//length(4) headLength(2) version(2) time(8) target/from(8) opCode(4)
-		writeByteDataIntoArray(BitConverter.getBytes(0));
-		writeByteDataIntoArray(BitConverter.getBytes(headLength));
-		writeByteDataIntoArray(BitConverter.getBytes(dataPack.getVersion()));
-		writeByteDataIntoArray(BitConverter.getBytes(dataPack.getTimeStamp()));
-		writeByteDataIntoArray(BitConverter.getBytes(dataPack.getTarget()));
-		writeByteDataIntoArray(BitConverter.getBytes(dataPack.getOpCode()));
-	}
-
-	private SanaeDataPack(int opCode, SanaeDataPack dataPack) {
-		//length(4) headLength(2) version(2) time(8) target/from(8) opCode(4)
-		writeByteDataIntoArray(BitConverter.getBytes(0));
-		writeByteDataIntoArray(BitConverter.getBytes(headLength));
-		writeByteDataIntoArray(BitConverter.getBytes(dataPack.getVersion()));
-		writeByteDataIntoArray(BitConverter.getBytes(dataPack.getTimeStamp()));
-		writeByteDataIntoArray(BitConverter.getBytes(dataPack.getTarget()));
-		writeByteDataIntoArray(BitConverter.getBytes(opCode));
-	}
-
-	private SanaeDataPack(byte[] pack) {
+	private BotDataPack(byte[] pack) {
 		dataArray = pack;
 		dataPointer = headLength;
 	} 
@@ -96,27 +65,15 @@ public class SanaeDataPack {
 		return BitConverter.toInt(dataArray, 0);
 	}  
 
-	public short getHeadLength() {
+	public short getVersion() {
 		return BitConverter.toShort(dataArray, 4);
 	}
 
-	public short getVersion() {
+	public int getOpCode() {
 		return BitConverter.toShort(dataArray, 6);
 	}
 
-	public long getTimeStamp() {
-		return BitConverter.toLong(dataArray, 8);
-	}
-
-	public long getTarget() {
-		return BitConverter.toLong(dataArray, 16);
-	}
-
-	public int getOpCode() {
-		return BitConverter.toShort(dataArray, 24);
-	}
-
-	private SanaeDataPack writeByteDataIntoArray(byte... bs) {
+	private BotDataPack writeByteDataIntoArray(byte... bs) {
 		for (byte b:bs) {
 			data.add(b);
 			++dataPointer;
@@ -124,43 +81,43 @@ public class SanaeDataPack {
 		return this;
 	}
 
-	public SanaeDataPack write(byte b) {
+	public BotDataPack write(byte b) {
 		writeByteDataIntoArray(typeByte);
 		writeByteDataIntoArray(b);
 		return this;
 	}
 
-	public SanaeDataPack write(short s) {
+	public BotDataPack write(short s) {
 		writeByteDataIntoArray(typeShort);
 		writeByteDataIntoArray(BitConverter.getBytes(s));
 		return this;
 	}
 
-	public SanaeDataPack write(int i) {
+	public BotDataPack write(int i) {
 		writeByteDataIntoArray(typeInt);
 		writeByteDataIntoArray(BitConverter.getBytes(i));
 		return this;
 	}
 
-	public SanaeDataPack write(long l) {
+	public BotDataPack write(long l) {
 		writeByteDataIntoArray(typeLong);
 		writeByteDataIntoArray(BitConverter.getBytes(l));
 		return this;
 	}
 
-	public SanaeDataPack write(float f) {
+	public BotDataPack write(float f) {
 		writeByteDataIntoArray(typeFloat);
 		writeByteDataIntoArray(BitConverter.getBytes(f));
 		return this;
 	}
 
-	public SanaeDataPack write(double d) {
+	public BotDataPack write(double d) {
 		writeByteDataIntoArray(typeDouble);
 		writeByteDataIntoArray(BitConverter.getBytes(d));
 		return this;
 	}
 
-	public SanaeDataPack write(String s) {
+	public BotDataPack write(String s) {
 		writeByteDataIntoArray(typeString);
 		byte[] stringBytes = BitConverter.getBytes(s);
 		write(stringBytes.length);
@@ -168,13 +125,13 @@ public class SanaeDataPack {
 		return this;
 	}
 
-	public SanaeDataPack write(boolean b) {
+	public BotDataPack write(boolean b) {
 		writeByteDataIntoArray(typeBoolean);
 		writeByteDataIntoArray(b ?(byte)1: (byte)0);
 		return this;
 	}
 
-	public SanaeDataPack write(File file) {
+	public BotDataPack write(File file) {
 		try {
 			FileInputStream fin=new FileInputStream(file);
 			byte[] bs=new byte[(int)file.length()];

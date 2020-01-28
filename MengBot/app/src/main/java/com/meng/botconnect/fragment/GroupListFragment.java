@@ -2,6 +2,8 @@ package com.meng.botconnect.fragment;
 
 import android.app.*;
 import android.content.*;
+import android.graphics.*;
+import android.graphics.drawable.*;
 import android.os.*;
 import android.view.*;
 import android.widget.*;
@@ -75,7 +77,7 @@ public class GroupListFragment extends Fragment {
 				public void onItemClick(final AdapterView<?> p1, View p2, final int p3, long p4) {
 					Group g=(Group) p1.getAdapter().getItem(p3);
 					FragmentTransaction transaction =MainActivity2.instance.fragmentManager.beginTransaction();
-					MainActivity2.instance.CQ.getGroupMemberList(g.id);
+					//MainActivity2.instance.CQ.getGroupMemberList(g.id);
 					ChatFragment cf=MainActivity2.instance.chatFragments.get(g.id);
 					if (cf == null) {
 						cf = new ChatFragment(g);
@@ -89,25 +91,14 @@ public class GroupListFragment extends Fragment {
 						@Override
 						public void run() {
 							MainActivity2.instance.initGroupList(true);
+							if (MainActivity.sharedPreference.getBoolean("useLightTheme")) {
+								MainActivity2.instance.ab.setBackgroundDrawable(new ColorDrawable(Color.argb(0xff, 0x3f, 0x51, 0xb5)));
+							} else {
+								MainActivity2.instance.ab.setBackgroundDrawable(new ColorDrawable(Color.GRAY));
+							}
 						}
 					};
 				}
 			});
 	}
-
-	/*public void showSetGroupNick(final BotMessage bm) {
-	 final EditText et = new EditText(MainActivity2.instance);
-	 et.setHint("群名片");
-	 new AlertDialog.Builder(getActivity())
-	 .setView(et)
-	 .setTitle("编辑")
-	 .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-
-	 @Override
-	 public void onClick(DialogInterface p1, int p2) {
-	 MainActivity2.instance.CQ.setGroupCard(group.id, bm.getFromQQ(), et.getText().toString());
-	 }
-	 }).setNegativeButton("取消", null).show();
-	 }
-	 */
 }

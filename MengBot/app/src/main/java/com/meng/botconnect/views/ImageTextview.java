@@ -1,19 +1,18 @@
-package com.addques;
-
+package com.meng.botconnect.views;
 import android.content.*;
+import android.graphics.*;
 import android.graphics.drawable.*;
 import android.text.*;
 import android.text.style.*;
 import android.util.*;
 import android.widget.*;
 import java.io.*;
-import android.graphics.*;
 
-public class ImageEdittext extends EditText {  
-    public ImageEdittext(Context context) {  
+public class ImageTextview extends TextView {  
+    public ImageTextview(Context context) {  
         super(context);  
     }  
-    public ImageEdittext(Context context, AttributeSet attrs) {  
+    public ImageTextview(Context context, AttributeSet attrs) {  
         super(context, attrs);  
     }
 

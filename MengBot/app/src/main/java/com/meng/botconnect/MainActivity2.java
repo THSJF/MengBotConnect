@@ -3,6 +3,8 @@ package com.meng.botconnect;
 import android.app.*;
 import android.content.*;
 import android.content.res.*;
+import android.graphics.*;
+import android.graphics.drawable.*;
 import android.os.*;
 import android.support.v4.widget.*;
 import android.view.*;
@@ -29,6 +31,7 @@ public class MainActivity2 extends Activity {
     public GroupListFragment messageFragment;
     private StatusFragment statusFragment;
     private SettingsFragment settingsFragment;
+	public QuestionFragment quesFragment;
     public TextView rightText;
 	public ConcurrentHashMap<Long,ChatFragment> chatFragments=new ConcurrentHashMap<>();
 	public FragmentManager fragmentManager;
@@ -36,7 +39,7 @@ public class MainActivity2 extends Activity {
 	public ExecutorService threadPool = Executors.newCachedThreadPool();
 	public static String mainFolder;
 	public static final int SELECT_FILE_REQUEST_CODE = 822;
-	private final String[] menus = new String[]{"群消息", "状态","设置","退出"};
+	private final String[] menus = new String[]{"群消息", "状态","题库","设置","退出"};
 	public ActionBar ab;
 	public BotData botData=new BotData();
 	public Gson gson;
@@ -76,6 +79,25 @@ public class MainActivity2 extends Activity {
 		}
 	}
 	public void addMsg(final BotMessage bm) {
+
+//		List<Long> ats = new CQCode().getAts(bm.getMsg());
+//		for (long l:ats) {
+//			LogTool.i(this, "获取到at:" + l);
+//		}
+//		List<CQImage> images = new CQCode().getCQImages(bm.getMsg());
+//        if (images.size() != 0) {
+//            File[] imageFiles = new File[images.size()];
+//            for (int i = 0, imagesSize = images.size(); i < imagesSize; i++) {
+//				CQImage image = images.get(i);
+//                try {
+//					LogTool.t(this, "开始下载图片");
+//					imageFiles[i] = image.download(MainActivity2.mainFolder + "/downloadImages/", image.getMd5());
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }
+
 		runOnUiThread(new Runnable(){
 
 				@Override
@@ -187,6 +209,9 @@ public class MainActivity2 extends Activity {
 						case "状态":
 							initStatusFragment(true);
 							break;
+						case "题库":
+							initQuesFragment(true);
+							break;
 						case "设置":
 							initSettingsFragment(true);
 							break;
@@ -200,6 +225,11 @@ public class MainActivity2 extends Activity {
 					}
 					mDrawerToggle.syncState();
 					mDrawerLayout.closeDrawer(lvDrawer);
+					if (MainActivity.sharedPreference.getBoolean("useLightTheme")) {
+						MainActivity2.instance.ab.setBackgroundDrawable(new ColorDrawable(Color.argb(0xff, 0x3f, 0x51, 0xb5)));
+					} else {
+						MainActivity2.instance.ab.setBackgroundDrawable(new ColorDrawable(Color.GRAY));
+					}
 				}
 			});
     }
@@ -238,6 +268,19 @@ public class MainActivity2 extends Activity {
         transactionAboutFragment.commit();
     }
 
+	private void initQuesFragment(boolean showNow) {
+        FragmentTransaction transactionsettings = fragmentManager.beginTransaction();
+        if (quesFragment == null) {
+            quesFragment = new QuestionFragment();
+            transactionsettings.add(R.id.main_activityLinearLayout, quesFragment);
+        }
+        hideFragment(transactionsettings);
+        if (showNow) {
+            transactionsettings.show(quesFragment);
+        }
+        transactionsettings.commit();
+    }
+
     private void initSettingsFragment(boolean showNow) {
         FragmentTransaction transactionsettings = fragmentManager.beginTransaction();
         if (settingsFragment == null) {
@@ -255,6 +298,7 @@ public class MainActivity2 extends Activity {
         Fragment fs[] = {
 			messageFragment,
 			statusFragment,
+			quesFragment,
 			settingsFragment
         };
         for (Fragment f : fs) {

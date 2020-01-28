@@ -19,7 +19,9 @@ public class GroupListAdapter extends BaseAdapter {
 	public GroupListAdapter(Context context, ArrayList<Group> allGroups) {
 		this.context = context;
 		this.allGroups = allGroups;
-		for (Group g:allGroups) {
+		int s=allGroups.size();
+		for (int i=0;i < s;++i) {
+			Group g=allGroups.get(i);
 			if (g.messageList.size() == 0) {
 				continue;
 			}
@@ -30,7 +32,9 @@ public class GroupListAdapter extends BaseAdapter {
 	@Override
 	public void notifyDataSetChanged() {
 		nowShow.clear();
-		for (Group g:allGroups) {
+		int s=allGroups.size();
+		for (int i=0;i < s;++i) {
+			Group g=allGroups.get(i);
 			if (g.messageList.size() == 0) {
 				continue;
 			}

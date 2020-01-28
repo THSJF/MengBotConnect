@@ -1,11 +1,13 @@
 package com.meng.botconnect.views;
 
 import android.content.*;
+import android.graphics.*;
 import android.graphics.drawable.*;
 import android.text.*;
 import android.text.style.*;
 import android.util.*;
 import android.widget.*;
+import java.io.*;
 
 public class ImageEdittext extends EditText {  
     public ImageEdittext(Context context) {  
@@ -13,16 +15,46 @@ public class ImageEdittext extends EditText {
     }  
     public ImageEdittext(Context context, AttributeSet attrs) {  
         super(context, attrs);  
-    }  
-    public void insertDrawable(int id) {  
-        final SpannableString ss = new SpannableString("easy");  
-        //得到drawable对象，即所要插入的图片   
-        Drawable d = getResources().getDrawable(id);  
-        d.setBounds(0, 0, d.getIntrinsicWidth(), d.getIntrinsicHeight());  
-        //用这个drawable对象代替字符串easy   
-        ImageSpan span = new ImageSpan(d, ImageSpan.ALIGN_BASELINE);  
-        //包括0但是不包括"easy".length()即：4。[0,4)。值得注意的是当我们复制这个图片的时候，实际是复制了"easy"这个字符串。   
-        ss.setSpan(span, 0, "easy".length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);  
-        append(ss);  
-    }  
-} 
+    }
+
+	public void insertImage(File chooseFilePath) {
+		Drawable d=new BitmapDrawable(BitmapFactory.decodeFile(chooseFilePath.getAbsolutePath()));
+		SpannableString ss = new SpannableString("(image)");  
+        d.setBounds(0, 0, d.getIntrinsicWidth() / 2, d.getIntrinsicHeight() / 2);
+        ImageSpan span = new ImageSpan(d, ImageSpan.ALIGN_BASELINE);
+        ss.setSpan(span, 0, "(image)".length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);  
+
+		String after=getText().toString().substring(getSelectionStart());
+		setText(getText().toString().replace(after, ""));
+		append(ss);
+		append(after);
+    }
+
+	public void replaceDrawable(File f) {
+		if (!getText().toString().contains("(image)")) {
+			return;
+		}
+		Drawable d=new BitmapDrawable(BitmapFactory.decodeFile(f.getAbsolutePath()));
+		SpannableString ss = new SpannableString("(image)");  
+        d.setBounds(0, 0, d.getIntrinsicWidth() / 2, d.getIntrinsicHeight() / 2);
+        ImageSpan span = new ImageSpan(d, ImageSpan.ALIGN_BASELINE);
+        ss.setSpan(span, 0, "(image)".length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);  
+		String[] sa=getText().toString().split("\\(image\\)");
+		String ns=getText().toString();
+		setText("");
+		if (sa.length == 1) {
+			if (ns.startsWith("(image)")) {
+				append(ss);
+				append(sa[0]);
+			} else {
+				append(sa[0]);
+				append(ss);
+			}
+		} else {
+			append(sa[0]);
+			append(ss);
+			append(sa[1]);
+		}
+	}
+}
+ 
