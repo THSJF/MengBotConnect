@@ -58,9 +58,9 @@ public class QuestionFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         tab = (TabHost) view.findViewById(android.R.id.tabhost);
 		tab.setup();
-        LayoutInflater i=LayoutInflater.from(getActivity()); 
-		i.inflate(R.layout.add_ques_activity, tab.getTabContentView()); 
-		i.inflate(R.layout.all_ques_activity, tab.getTabContentView());
+        LayoutInflater layoutInflater=LayoutInflater.from(getActivity()); 
+		layoutInflater.inflate(R.layout.add_ques_activity, tab.getTabContentView()); 
+		layoutInflater.inflate(R.layout.all_ques_activity, tab.getTabContentView());
 		btnClean = (Button) view.findViewById(R.id.clean);
 		btnSend = (Button) view.findViewById(R.id.mainButtonSend);
 		btnAdd = (Button) view.findViewById(R.id.add_ques_activityButtonAddAns);
@@ -79,8 +79,32 @@ public class QuestionFragment extends Fragment {
 		btnImage.setOnClickListener(onClick);
 		btnAdd.setOnClickListener(onClick);
 		btnSub.setOnClickListener(onClick);
-		spDiffcult.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_dropdown_item, new String[]{"easy","normal","hard","lunatic","overdrive","kidding"}));
-		spType.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_dropdown_item, new String[]{"未分类","车万基础","新作整数作","官方弹幕作","官方非弹幕","官方所有","同人弹幕","luastg"}));
+		FileInputStream fis;
+		File dat=new File(Environment.getExternalStorageDirectory() + "/botkey.dat");
+		byte[] bys=new byte[(int)dat.length()];
+		try {
+			 fis=new FileInputStream(dat);
+			 fis.read(bys);
+		} catch (Exception e) {
+			LogTool.e(getActivity(),e);
+			return;
+		}
+		BotDataPack de=BotDataPack.decode(bys);
+		ArrayList<String> diffList=new ArrayList<>();
+		System.out.println(de.readString());
+		int le=de.readInt();
+		for (int i=0;i < le;++i) {
+			diffList.add(de.readString());
+		}
+
+		ArrayList<String> typeList=new ArrayList<>();
+		int le2=de.readInt();
+		for (int i=0;i < le2;++i) {
+			typeList.add(de.readString());
+		}
+		
+		spDiffcult.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_dropdown_item, diffList));
+		spType.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_dropdown_item, typeList));
 		spFiDiff.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_dropdown_item, new String[]{"all","easy","normal","hard","lunatic","overdrive","kidding"}));
 		spFiType.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_dropdown_item, new String[]{"全部分类","未分类","车万基础","新作整数作","官方弹幕作","官方非弹幕","官方所有","同人弹幕","luastg"}));
 		spFiType.setOnItemSelectedListener(onItemSelect);
@@ -110,7 +134,8 @@ public class QuestionFragment extends Fragment {
 						llAnswers.addView(ansv);
 					}
 					etReason.setText(qa.r);
-					etQues.replaceDrawable(new File(Environment.getExternalStorageDirectory() + "/Pictures/sanae/questions/" + qa.getId() + ".jpg"));
+					chooseFilePath = new File(Environment.getExternalStorageDirectory() + "/Pictures/sanae/questions/" + qa.getId() + ".jpg");
+					etQues.replaceDrawable(chooseFilePath);
 				}
 			});
 
@@ -194,10 +219,12 @@ public class QuestionFragment extends Fragment {
 							sdp.write(chooseFilePath);
 						}
 						try {
+							chooseFilePath = null;
 							MainActivity2.instance.CQ.send(sdp.getData());
 						} catch (Exception e) {
 							LogTool.e(getActivity(), e);
 						}
+						clean();
 						LogTool.t(getActivity(), "正在发送");	
 					} else if (mode == 1) {
 						onEdit.setType(spType.getSelectedItemPosition());
@@ -224,6 +251,7 @@ public class QuestionFragment extends Fragment {
 						if (chooseFilePath != null && etQues.getText().toString().contains("(image)")) {
 							sdp.write(chooseFilePath);
 						}
+						chooseFilePath = null;
 						try {
 							MainActivity2.instance.CQ.send(sdp.getData());
 						} catch (Exception e) {
@@ -239,6 +267,7 @@ public class QuestionFragment extends Fragment {
 					break;
 				case R.id.clean:
 					clean();
+					chooseFilePath = null;
 					break;
 				case R.id.add_ques_activityButton_addPic:
 					if (chooseFilePath == null || !etQues.getText().toString().contains("(image)")) {
