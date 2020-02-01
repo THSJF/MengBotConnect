@@ -8,12 +8,12 @@ import android.view.View.*;
 import android.widget.*;
 import android.widget.AdapterView.*;
 import com.meng.botconnect.*;
+import com.meng.botconnect.adapter.*;
 import com.meng.botconnect.bean.*;
 import com.meng.botconnect.lib.*;
 import com.meng.botconnect.network.*;
 import com.meng.botconnect.views.*;
 import java.io.*;
-import java.net.*;
 import java.util.*;
 
 import android.view.View.OnClickListener;
@@ -41,7 +41,7 @@ public class QuestionFragment extends Fragment {
 	public ArrayList<QA> alAllQa=new ArrayList<>();
 	public ArrayList<QA> nowQaList=new ArrayList<>();
 	private ListView lvAllQa;
-	public QuesAdapter quesAdapter;
+	public QuestionAdapter quesAdapter;
 
 	public File chooseFilePath;
 
@@ -83,28 +83,31 @@ public class QuestionFragment extends Fragment {
 		File dat=new File(Environment.getExternalStorageDirectory() + "/botkey.dat");
 		byte[] bys=new byte[(int)dat.length()];
 		try {
-			 fis=new FileInputStream(dat);
-			 fis.read(bys);
+			fis = new FileInputStream(dat);
+			fis.read(bys);
 		} catch (Exception e) {
-			LogTool.e(getActivity(),e);
+			LogTool.e(getActivity(), e);
 			return;
 		}
-		BotDataPack de=BotDataPack.decode(bys);
-		ArrayList<String> diffList=new ArrayList<>();
-		System.out.println(de.readString());
-		int le=de.readInt();
-		for (int i=0;i < le;++i) {
-			diffList.add(de.readString());
-		}
+		/*	BotDataPack de=BotDataPack.decode(bys);
+		 ArrayList<String> diffList=new ArrayList<>();
+		 System.out.println(de.readString());
+		 int le=de.readInt();
+		 for (int i=0;i < le;++i) {
+		 diffList.add(de.readString());
+		 }
 
-		ArrayList<String> typeList=new ArrayList<>();
-		int le2=de.readInt();
-		for (int i=0;i < le2;++i) {
-			typeList.add(de.readString());
-		}
-		
-		spDiffcult.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_dropdown_item, diffList));
-		spType.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_dropdown_item, typeList));
+		 ArrayList<String> typeList=new ArrayList<>();
+		 int le2=de.readInt();
+		 for (int i=0;i < le2;++i) {
+		 typeList.add(de.readString());
+		 }
+
+		 spDiffcult.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_dropdown_item, diffList));
+		 spType.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_dropdown_item, typeList));
+		 */
+		spDiffcult.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_dropdown_item, new String[]{"easy","normal","hard","lunatic","overdrive","kidding"}));
+		spType.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_dropdown_item, new String[]{"未分类","车万基础","新作整数作","官方弹幕作","官方非弹幕","官方所有","同人弹幕","luastg"}));
 		spFiDiff.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_dropdown_item, new String[]{"all","easy","normal","hard","lunatic","overdrive","kidding"}));
 		spFiType.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_dropdown_item, new String[]{"全部分类","未分类","车万基础","新作整数作","官方弹幕作","官方非弹幕","官方所有","同人弹幕","luastg"}));
 		spFiType.setOnItemSelectedListener(onItemSelect);
@@ -113,7 +116,7 @@ public class QuestionFragment extends Fragment {
         tab.addTab(tab.newTabSpec("tab2").setIndicator("浏览问题" , null).setContent(R.id.all_ques_activityLinearLayout));
 		lvAllQa = (ListView) view.findViewById(R.id.all_quesListView);
 		nowQaList.addAll(alAllQa);
-		quesAdapter = new QuesAdapter(getActivity(), nowQaList);
+		quesAdapter = new QuestionAdapter(getActivity(), nowQaList);
 		lvAllQa.setAdapter(quesAdapter);
 		lvAllQa.setOnItemClickListener(new OnItemClickListener(){
 
@@ -280,6 +283,10 @@ public class QuestionFragment extends Fragment {
 					}
 					break;
 				case R.id.add_ques_activityButtonAddAns:
+					if (llAnswers.getChildCount() >= 32) {
+						LogTool.t(getActivity(), "最多添加32个答案");
+						return;
+					}
 					llAnswers.addView(new AnswerView(getActivity(), llAnswers.getChildCount(), "", false));
 					break;
 				case R.id.add_ques_activityButtonSubAns:
@@ -307,6 +314,8 @@ public class QuestionFragment extends Fragment {
 		mode = 0;
 		onEdit = null;
 		btnClean.setText("清空");
+		llAnswers.addView(new AnswerView(getActivity(), llAnswers.getChildCount(), "", false));
+		llAnswers.addView(new AnswerView(getActivity(), llAnswers.getChildCount(), "", false));
 	}
 
 

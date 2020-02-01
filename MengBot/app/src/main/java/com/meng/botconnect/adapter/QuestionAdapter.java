@@ -1,4 +1,4 @@
-package com.meng.botconnect.lib;
+package com.meng.botconnect.adapter;
 
 import android.app.*;
 import android.graphics.*;
@@ -11,11 +11,11 @@ import com.meng.botconnect.views.*;
 import java.io.*;
 import java.util.*;
 
-public class QuesAdapter extends BaseAdapter {
+public class QuestionAdapter extends BaseAdapter {
 	private Activity context;
 	private ArrayList<QA> infosList;
 	private StringBuilder stringBuilder=new StringBuilder();
-	public QuesAdapter(Activity context, ArrayList<QA> infosSet) {
+	public QuestionAdapter(Activity context, ArrayList<QA> infosSet) {
 		this.context = context;
 		this.infosList = infosSet;
 	}

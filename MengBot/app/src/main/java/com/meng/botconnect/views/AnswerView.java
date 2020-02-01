@@ -6,6 +6,7 @@ import com.meng.botconnect.*;
 
 public class AnswerView extends LinearLayout {
 	private EditText et;
+	private TextView tv;
 	private CheckBox cb;
 	private int id;
 
@@ -13,10 +14,17 @@ public class AnswerView extends LinearLayout {
         super(context);
 		LayoutInflater.from(context).inflate(R.layout.answer_view, this);
         et = (EditText)findViewById(R.id.answer_viewEditText);
-        cb = (CheckBox)findViewById(R.id.answer_viewCheckBox);   		
+		tv = (TextView) findViewById(R.id.answer_viewTextView);
+		cb = (CheckBox)findViewById(R.id.answer_viewCheckBox);   		
 		this.id = id;
+		tv.setText("答案" + (id+1)+":");
 		setAnswer(Ans);
 		setTrueAnswer(isTrue);
+		if (id == 0) {
+			et.setHint("是");
+		} else if (id == 1) {
+			et.setHint("否");
+		}
 	}
 
 	public boolean isTrueAnswer() {
@@ -28,7 +36,8 @@ public class AnswerView extends LinearLayout {
 	}
 
 	public String getAnswer() {
-		return et.getText().toString();
+		String userInput=et.getText().toString();
+		return userInput.equals("") ?et.getHint().toString(): userInput;
 	}
 
 	public void setAnswer(String s) {

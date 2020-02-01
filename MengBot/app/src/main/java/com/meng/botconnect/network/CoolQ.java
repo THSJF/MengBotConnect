@@ -1,10 +1,11 @@
 package com.meng.botconnect.network;
-import android.app.*;
 import android.os.*;
+import android.widget.*;
 import com.google.gson.reflect.*;
 import com.meng.botconnect.*;
 import com.meng.botconnect.bean.*;
 import com.meng.botconnect.lib.*;
+import com.meng.grzxConfig.MaterialDesign.adapters.*;
 import java.io.*;
 import java.net.*;
 import java.nio.*;
@@ -140,7 +141,29 @@ public class CoolQ extends WebSocketClient {
 					MainActivity2.nowBot.setGroupCount(gc);
 					break;
 				case BotDataPack.getConfig:
-					MainActivity2.instance.botData.ranConfig = MainActivity2.instance.gson.fromJson(rec.readString(), new TypeToken<RanConfigBean>() {}.getType());
+					RanConfigBean rcfgb=MainActivity2.instance.gson.fromJson(rec.readString(), new TypeToken<RanConfigBean>() {}.getType());
+					MainActivity2.instance.botData.ranConfig = rcfgb;
+
+					MainActivity2.instance.groupConfigAdapter = new GroupConfigAdapter(MainActivity2.instance, rcfgb.groupConfigs);
+					MainActivity2.instance.qqNotReplyAdapter = new QQAccountAdapter(MainActivity2.instance, rcfgb.QQNotReply);
+					MainActivity2.instance.personInfoAdapter = new PersonInfoAdapter(MainActivity2.instance, rcfgb.personInfo);
+					MainActivity2.instance.wordNotReplyAdapter = new ArrayAdapter<>(MainActivity2.instance, android.R.layout.simple_list_item_1, rcfgb.wordNotReply);
+					MainActivity2.instance.masterAdapter = new QQAccountAdapter(MainActivity2.instance, rcfgb.masterList);
+					MainActivity2.instance.adminAdapter = new QQAccountAdapter(MainActivity2.instance, rcfgb.adminList);
+					MainActivity2.instance.groupAutoAllowAdapter = new QQAccountAdapter(MainActivity2.instance, rcfgb.groupAutoAllowList);
+					MainActivity2.instance.blackQQAdapter = new QQAccountAdapter(MainActivity2.instance, rcfgb.blackListQQ);
+					MainActivity2.instance.blackGroupAdapter = new QQAccountAdapter(MainActivity2.instance, rcfgb.blackListGroup, true);
+
+					MainActivity2.instance.groupConfigFragment.mListView.setAdapter(MainActivity2.instance.groupConfigAdapter);
+					MainActivity2.instance.qqNotReplyFragment.mListView.setAdapter(MainActivity2.instance.qqNotReplyAdapter);
+					MainActivity2.instance.wordNotReplyFragment.mListView.setAdapter(MainActivity2.instance.wordNotReplyAdapter);
+					MainActivity2.instance.personInfoFragment.mListView.setAdapter(MainActivity2.instance.personInfoAdapter);
+					MainActivity2.instance.masterFragment.mListView.setAdapter(MainActivity2.instance.masterAdapter);
+					MainActivity2.instance.adminFragment.mListView.setAdapter(MainActivity2.instance.adminAdapter);
+					MainActivity2.instance.groupAutoAllowFragment.mListView.setAdapter(MainActivity2.instance.groupAutoAllowAdapter);
+					MainActivity2.instance.blackQQFragment.mListView.setAdapter(MainActivity2.instance.blackQQAdapter);
+					MainActivity2.instance.blackGroupFragment.mListView.setAdapter(MainActivity2.instance.blackGroupAdapter);
+
 					break;
 				case BotDataPack.onPerSecMsgInfo:
 					MainActivity2.instance.nowBot.setMsgInfo(rec.readInt(), rec.readInt(), rec.readInt(), rec.readInt(), rec.readInt());
@@ -173,6 +196,219 @@ public class CoolQ extends WebSocketClient {
 							}
 						}).start();
 					break;
+				case BotDataPack.opEnableFunction:
+					MainActivity2.instance.botData.ranConfig.getGroupConfig(rec.readLong()).setFunctionEnabled(rec.readInt(), rec.readInt() == 1);
+					break;
+				case BotDataPack.addGroup:
+					GroupConfig g1c=new GroupConfig();
+					g1c.groupNumber = rec.readLong();
+					MainActivity2.instance.botData.ranConfig.groupConfigs.add(g1c);
+					MainActivity2.instance.runOnUiThread(new Runnable(){
+
+							@Override
+							public void run() {		
+								MainActivity2.instance.groupConfigAdapter.notifyDataSetChanged();
+							}
+						});
+					break;
+				case BotDataPack.addNotReplyUser:
+					MainActivity2.instance.botData.ranConfig.QQNotReply.add(rec.readLong());
+					MainActivity2.instance.runOnUiThread(new Runnable(){
+
+							@Override
+							public void run() {	
+								MainActivity2.instance.qqNotReplyAdapter.notifyDataSetChanged();
+							}
+						});
+					break;
+				case BotDataPack.addNotReplyWord:
+					MainActivity2.instance.botData.ranConfig.wordNotReply.add(rec.readString());
+					MainActivity2.instance.runOnUiThread(new Runnable(){
+
+							@Override
+							public void run() {
+								MainActivity2.instance.wordNotReplyAdapter.notifyDataSetChanged();
+							}
+						});
+					break;
+				case BotDataPack.addPersonInfo:
+					MainActivity2.instance.botData.ranConfig.personInfo.add(MainActivity2.instance.gson.fromJson(rec.readString(), PersonInfo.class));
+					MainActivity2.instance.runOnUiThread(new Runnable(){
+
+							@Override
+							public void run() {
+								MainActivity2.instance.personInfoAdapter.notifyDataSetChanged();
+							}
+						});
+					break;
+				case BotDataPack.addMaster:
+					MainActivity2.instance.botData.ranConfig.masterList.add(rec.readLong());
+					MainActivity2.instance.runOnUiThread(new Runnable(){
+
+							@Override
+							public void run() {
+								MainActivity2.instance.masterAdapter.notifyDataSetChanged();
+							}
+						});
+					break;
+				case BotDataPack.addAdmin:
+					MainActivity2.instance.botData.ranConfig.adminList.add(rec.readLong());
+					MainActivity2.instance.runOnUiThread(new Runnable(){
+
+							@Override
+							public void run() {
+								MainActivity2.instance.adminAdapter.notifyDataSetChanged();
+							}
+						});
+					break;
+				case BotDataPack.addGroupAllow:
+					MainActivity2.instance.botData.ranConfig.groupAutoAllowList.add(rec.readLong());
+					MainActivity2.instance.runOnUiThread(new Runnable(){
+
+							@Override
+							public void run() {
+								MainActivity2.instance.groupAutoAllowAdapter.notifyDataSetChanged();
+							}
+						});
+					break;
+				case BotDataPack.addBlackQQ:
+					MainActivity2.instance.botData.ranConfig.blackListQQ.add(rec.readLong());
+					MainActivity2.instance.runOnUiThread(new Runnable(){
+
+							@Override
+							public void run() {
+								MainActivity2.instance.blackQQAdapter.notifyDataSetChanged();
+							}
+						});
+					break;
+				case BotDataPack.addBlackGroup:
+					MainActivity2.instance.botData.ranConfig.blackListGroup.add(rec.readLong());
+					MainActivity2.instance.runOnUiThread(new Runnable(){
+
+							@Override
+							public void run() {
+								MainActivity2.instance.blackGroupAdapter.notifyDataSetChanged();
+							}
+						});
+					break;
+				case BotDataPack.removeGroup:
+					long gcn=rec.readLong();
+					Iterator<GroupConfig> iterator=MainActivity2.instance.botData.ranConfig.groupConfigs.iterator();
+					while (iterator.hasNext()) {
+						GroupConfig gcr=iterator.next();
+						if (gcr.groupNumber == gcn) {
+							iterator.remove();
+							break;
+						}
+					}
+					MainActivity2.instance.runOnUiThread(new Runnable(){
+
+							@Override
+							public void run() {
+								MainActivity2.instance.groupConfigAdapter.notifyDataSetChanged();
+							}
+						});
+					break;
+				case BotDataPack.removeNotReplyUser:
+					MainActivity2.instance.botData.ranConfig.QQNotReply.remove(rec.readLong());
+					MainActivity2.instance.runOnUiThread(new Runnable(){
+
+							@Override
+							public void run() {
+								MainActivity2.instance.qqNotReplyAdapter.notifyDataSetChanged();
+							}
+						});
+					break;
+				case BotDataPack.removeNotReplyWord:
+					MainActivity2.instance.botData.ranConfig.wordNotReply.remove(rec.readString());
+					MainActivity2.instance.runOnUiThread(new Runnable(){
+
+							@Override
+							public void run() {
+								MainActivity2.instance.wordNotReplyAdapter.notifyDataSetChanged();
+							}
+						});
+					break;
+				case BotDataPack.removePersonInfo:
+					MainActivity2.instance.botData.ranConfig.personInfo.remove(MainActivity2.instance.gson.fromJson(rec.readString(), PersonInfo.class));
+					MainActivity2.instance.runOnUiThread(new Runnable(){
+
+							@Override
+							public void run() {
+								MainActivity2.instance.personInfoAdapter.notifyDataSetChanged();
+							}
+						});
+					break;
+				case BotDataPack.removeMaster:
+					long rm=rec.readLong();
+					MainActivity2.instance.botData.ranConfig.masterList.remove(rm);
+					MainActivity2.instance.runOnUiThread(new Runnable(){
+
+							@Override
+							public void run() {
+								MainActivity2.instance.masterAdapter.notifyDataSetChanged();	
+							}
+						});
+					break;
+				case BotDataPack.removeAdmin:
+					long ra=rec.readLong();
+					MainActivity2.instance.botData.ranConfig.adminList.remove(ra);
+					MainActivity2.instance.runOnUiThread(new Runnable(){
+
+							@Override
+							public void run() {
+								MainActivity2.instance.adminAdapter.notifyDataSetChanged();	
+							}
+						});
+					break;
+				case BotDataPack.removeGroupAllow:
+					MainActivity2.instance.botData.ranConfig.groupAutoAllowList.remove(rec.readLong());
+					MainActivity2.instance.runOnUiThread(new Runnable(){
+
+							@Override
+							public void run() {
+								MainActivity2.instance.groupAutoAllowAdapter.notifyDataSetChanged();
+							}
+						});
+					break;
+				case BotDataPack.removeBlackQQ:
+					MainActivity2.instance.botData.ranConfig.blackListQQ.remove(rec.readLong());
+					MainActivity2.instance.runOnUiThread(new Runnable(){
+
+							@Override
+							public void run() {
+								MainActivity2.instance.blackQQAdapter.notifyDataSetChanged();
+							}
+						});
+					break;
+				case BotDataPack.removeBlackGroup:
+					MainActivity2.instance.botData.ranConfig.blackListGroup.remove(rec.readLong());
+					MainActivity2.instance.runOnUiThread(new Runnable(){
+
+							@Override
+							public void run() {
+								MainActivity2.instance.blackGroupAdapter.notifyDataSetChanged();
+							}
+						});
+					break;
+				case BotDataPack.setPersonInfo:
+					PersonInfo oldPersonInfo = MainActivity2.instance.gson.fromJson(rec.readString(), PersonInfo.class);
+					PersonInfo newPersonInfo = MainActivity2.instance.gson.fromJson(rec.readString(), PersonInfo.class);
+					for (PersonInfo pi : MainActivity2.instance.botData.ranConfig.personInfo) {
+						if (pi.name.equals(oldPersonInfo.name) && pi.qq == oldPersonInfo.qq && pi.bid == oldPersonInfo.bid && pi.bliveRoom == oldPersonInfo.bliveRoom) {
+							MainActivity2.instance.botData.ranConfig.personInfo.remove(oldPersonInfo);
+							break;
+						}
+					}
+					MainActivity2.instance.botData.ranConfig.personInfo.add(newPersonInfo);
+					MainActivity2.instance.runOnUiThread(new Runnable(){
+
+							@Override
+							public void run() {
+								MainActivity2.instance.personInfoAdapter.notifyDataSetChanged();
+							}
+						});
+					break;	
 
 					/*case BotDataPack.getCqImgFile:
 					 File f=new File(MainActivity2.mainFolder + "/cqimg/" + rec.readString());
@@ -188,15 +424,6 @@ public class CoolQ extends WebSocketClient {
 					 break;*/
 			}
 		}
-
-
-		/*if (dataRec.getOpCode() == BotDataPack.getConfig) {
-		 Type type = new TypeToken<RanConfigBean>() {
-		 }.getType();
-		 MainActivity2.instence.botData.ranConfig = MainActivity2.instence.gson.fromJson(dataRec.readString(), type);
-		 } else {
-		 resultMap.put(dataRec.getOpCode(), dataRec);
-		 }*/
 	}
 
 	@Override

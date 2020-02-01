@@ -20,19 +20,27 @@ public class PersonInfo extends Object {
         return tip.get(0);
     }
 
-    public boolean isTipVidoe() {
+    public void setTipLive(boolean b) {
+        tip.set(0, b);
+    }
+
+    public boolean isTipVideo() {
         return tip.get(1);
+    }
+
+    public void setTipVideo(boolean b) {
+        tip.set(1, b);
     }
 
     public boolean isTipAction() {
         return tip.get(2);
     }
 
-    @Override
-    public int hashCode() {
-        return (int) (qq / 10);
+    public void setTipAction(boolean b) {
+        tip.set(2, b);
     }
 
+	
     @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof PersonInfo)) {

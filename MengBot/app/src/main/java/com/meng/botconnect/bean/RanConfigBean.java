@@ -4,18 +4,26 @@ import com.meng.botconnect.*;
 import java.util.*;
 
 public class RanConfigBean {
-	//public HashSet<GroupConfig> groupConfigs = new HashSet<>();
+	public HashSet<GroupConfig> groupConfigs = new HashSet<>();
     public HashSet<Long> QQNotReply = new HashSet<>();
     public HashSet<Long> blackListQQ = new HashSet<>();
     public HashSet<Long> blackListGroup = new HashSet<>();
-    public HashSet<String> wordNotReply = new HashSet<>();
+    public ArrayList<String> wordNotReply = new ArrayList<>();
     public HashSet<PersonInfo> personInfo = new HashSet<>();
     public HashSet<Long> masterList = new HashSet<>();
     public HashSet<Long> adminList = new HashSet<>();
-    //public HashSet<Long> groupAutoAllowList = new HashSet<>();
+    public HashSet<Long> groupAutoAllowList = new HashSet<>();
 	public HashMap<Long,String> nicknameMap = new HashMap<>();
-	//public long ogg = 0;
+	public long ogg = 0;
 
+	public GroupConfig getGroupConfig(long fromGroup) {
+        for (GroupConfig gc : groupConfigs) {
+            if (fromGroup == gc.groupNumber) {
+                return gc;
+            }
+        }
+        return null;
+    }
 
 
 	public String getNickName(long group, long qq) {

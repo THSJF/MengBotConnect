@@ -15,6 +15,7 @@ import com.meng.botconnect.bean.*;
 import com.meng.botconnect.fragment.*;
 import com.meng.botconnect.lib.*;
 import com.meng.botconnect.network.*;
+import com.meng.grzxConfig.MaterialDesign.adapters.*;
 import java.util.*;
 import java.util.concurrent.*;
 
@@ -25,25 +26,55 @@ public class MainActivity2 extends Activity {
     private DrawerLayout mDrawerLayout;
     private ListView lvDrawer;
 	public View headView;
-    private RelativeLayout rt;
+    private RelativeLayout rightRelativeLayout;
     private ActionBarDrawerToggle mDrawerToggle;
     private DrawerArrowDrawable drawerArrow;
     public GroupListFragment messageFragment;
     private StatusFragment statusFragment;
     private SettingsFragment settingsFragment;
 	public QuestionFragment quesFragment;
-    public TextView rightText;
+	public TextView rightText;
 	public ConcurrentHashMap<Long,ChatFragment> chatFragments=new ConcurrentHashMap<>();
 	public FragmentManager fragmentManager;
 	public CoolQ CQ;
-	public ExecutorService threadPool = Executors.newCachedThreadPool();
+	public ExecutorService threadPool = Executors.newFixedThreadPool(5);
 	public static String mainFolder;
 	public static final int SELECT_FILE_REQUEST_CODE = 822;
-	private final String[] menus = new String[]{"群消息", "状态","题库","设置","退出"};
+
+	private final String[] menus = new String[]{
+		"群消息",
+		"状态",
+		"题库",
+		"群配置","不回复的QQ","不回复的字","飞机佬名单","Master","Admin",
+		"自动同意进群","黑名单QQ","黑名单群",
+		"设置",
+		"退出"};
 	public ActionBar ab;
 	public BotData botData=new BotData();
 	public Gson gson;
 	public Runnable onBackPressRunable=null;
+
+
+	public GroupConfigAdapter groupConfigAdapter;
+    public QQAccountAdapter qqNotReplyAdapter;
+    public ArrayAdapter wordNotReplyAdapter;
+    public PersonInfoAdapter personInfoAdapter;
+    public QQAccountAdapter masterAdapter;
+    public QQAccountAdapter adminAdapter;
+    public QQAccountAdapter groupAutoAllowAdapter;
+
+    public QQAccountAdapter blackQQAdapter;
+    public QQAccountAdapter blackGroupAdapter;
+
+    public GroupConfigFragment groupConfigFragment;
+    public QQNotReplyFragment qqNotReplyFragment;
+    public WordNotReplyFragment wordNotReplyFragment;
+    public PersonInfoFragment personInfoFragment;
+    public MasterFragment masterFragment;
+    public AdminFragment adminFragment;
+    public GroupAutoAllowFragment groupAutoAllowFragment;
+    public BlackQQFragment blackQQFragment;
+    public BlackGroupFragment blackGroupFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +95,16 @@ public class MainActivity2 extends Activity {
 		GsonBuilder gb = new GsonBuilder();
 		gb.setLongSerializationPolicy(LongSerializationPolicy.STRING);
 		gson = gb.create();
+		initQQFragment(false);
+        initWordFragment(false);
+        initPersonFragment(false);
+        initMasterFragment(false);
+        initAdminFragment(false);
+        initAllowFragment(false);
+        initBlackQQFragment(false);
+        initBlackGroupFragment(false);
+        initSettingsFragment(false);
+        initGroupConfigFragment(false);
 		try {
 			LogTool.t(MainActivity2.instance, String.format("ws://%s:%s", CoolQ.ip, CoolQ.port));
 			CQ = new CoolQ();
@@ -146,10 +187,10 @@ public class MainActivity2 extends Activity {
     private void changeTheme() {
         if (MainActivity.sharedPreference.getBoolean("useLightTheme", true)) {
             lvDrawer.setBackgroundColor(getResources().getColor(android.R.color.background_light));
-            rt.setBackgroundColor(getResources().getColor(android.R.color.background_light));
+            rightRelativeLayout.setBackgroundColor(getResources().getColor(android.R.color.background_light));
         } else {
             lvDrawer.setBackgroundColor(getResources().getColor(android.R.color.background_dark));
-            rt.setBackgroundColor(getResources().getColor(android.R.color.background_dark));
+            rightRelativeLayout.setBackgroundColor(getResources().getColor(android.R.color.background_dark));
         }
         if (getIntent().getBooleanExtra("setTheme", false)) {
             initSettingsFragment(true);
@@ -212,6 +253,36 @@ public class MainActivity2 extends Activity {
 						case "题库":
 							initQuesFragment(true);
 							break;
+						case "群配置":
+							initGroupConfigFragment(true);
+							break;
+						case "不回复的QQ":
+							initQQFragment(true);
+							break;
+						case "不回复的字":
+							initWordFragment(true);
+							break;
+						case "飞机佬名单":
+							initPersonFragment(true);
+							break;
+						case "Master":
+							initMasterFragment(true);
+							break;
+						case "Admin":
+							initAdminFragment(true);
+							break;
+						case "自动同意进群":
+							initAllowFragment(true);
+							break;
+						case "黑名单QQ":
+							initBlackQQFragment(true);
+							break;
+						case "黑名单群":
+							initBlackGroupFragment(true);
+							break;	
+						case "群配置":
+							initGroupConfigFragment(true);
+							break;
 						case "设置":
 							initSettingsFragment(true);
 							break;
@@ -235,11 +306,129 @@ public class MainActivity2 extends Activity {
     }
 
     private void findViews() {
-        rt = (RelativeLayout) findViewById(R.id.right_drawer);
+        rightRelativeLayout = (RelativeLayout) findViewById(R.id.right_drawer);
         rightText = (TextView) findViewById(R.id.main_activityTextViewRight);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         lvDrawer = (ListView) findViewById(R.id.navdrawer);
     }
+
+	public void initGroupConfigFragment(boolean showNow) {
+        FragmentTransaction transactionWelcome = getFragmentManager().beginTransaction();
+        if (groupConfigFragment == null) {
+            groupConfigFragment = new GroupConfigFragment();
+            transactionWelcome.add(R.id.main_activityLinearLayout, groupConfigFragment);
+        }
+        hideFragment(transactionWelcome);
+        if (showNow) {
+            transactionWelcome.show(groupConfigFragment);
+        }
+        transactionWelcome.commit();
+    }
+
+    public void initQQFragment(boolean showNow) {
+        FragmentTransaction transactionWelcome = getFragmentManager().beginTransaction();
+        if (qqNotReplyFragment == null) {
+            qqNotReplyFragment = new QQNotReplyFragment();
+            transactionWelcome.add(R.id.main_activityLinearLayout, qqNotReplyFragment);
+        }
+        hideFragment(transactionWelcome);
+        if (showNow) {
+            transactionWelcome.show(qqNotReplyFragment);
+        }
+        transactionWelcome.commit();
+    }
+
+    public void initWordFragment(boolean showNow) {
+        FragmentTransaction transactionWelcome = getFragmentManager().beginTransaction();
+        if (wordNotReplyFragment == null) {
+            wordNotReplyFragment = new WordNotReplyFragment();
+            transactionWelcome.add(R.id.main_activityLinearLayout, wordNotReplyFragment);
+        }
+        hideFragment(transactionWelcome);
+        if (showNow) {
+            transactionWelcome.show(wordNotReplyFragment);
+        }
+        transactionWelcome.commit();
+    }
+
+    public void initPersonFragment(boolean showNow) {
+        FragmentTransaction transactionWelcome = getFragmentManager().beginTransaction();
+        if (personInfoFragment == null) {
+            personInfoFragment = new PersonInfoFragment();
+            transactionWelcome.add(R.id.main_activityLinearLayout, personInfoFragment);
+        }
+        hideFragment(transactionWelcome);
+        if (showNow) {
+            transactionWelcome.show(personInfoFragment);
+        }
+        transactionWelcome.commit();
+    }
+
+    public void initMasterFragment(boolean showNow) {
+        FragmentTransaction transactionWelcome = getFragmentManager().beginTransaction();
+        if (masterFragment == null) {
+            masterFragment = new MasterFragment();
+            transactionWelcome.add(R.id.main_activityLinearLayout, masterFragment);
+        }
+        hideFragment(transactionWelcome);
+        if (showNow) {
+            transactionWelcome.show(masterFragment);
+        }
+        transactionWelcome.commit();
+    }
+
+    public void initAdminFragment(boolean showNow) {
+        FragmentTransaction transactionWelcome = getFragmentManager().beginTransaction();
+        if (adminFragment == null) {
+            adminFragment = new AdminFragment();
+            transactionWelcome.add(R.id.main_activityLinearLayout, adminFragment);
+        }
+        hideFragment(transactionWelcome);
+        if (showNow) {
+            transactionWelcome.show(adminFragment);
+        }
+        transactionWelcome.commit();
+    }
+
+    public void initAllowFragment(boolean showNow) {
+        FragmentTransaction transactionWelcome = getFragmentManager().beginTransaction();
+        if (groupAutoAllowFragment == null) {
+            groupAutoAllowFragment = new GroupAutoAllowFragment();
+            transactionWelcome.add(R.id.main_activityLinearLayout, groupAutoAllowFragment);
+        }
+        hideFragment(transactionWelcome);
+        if (showNow) {
+            transactionWelcome.show(groupAutoAllowFragment);
+        }
+        transactionWelcome.commit();
+    }
+
+    public void initBlackQQFragment(boolean showNow) {
+        FragmentTransaction transactionWelcome = getFragmentManager().beginTransaction();
+        if (blackQQFragment == null) {
+            blackQQFragment = new BlackQQFragment();
+            transactionWelcome.add(R.id.main_activityLinearLayout, blackQQFragment);
+        }
+        hideFragment(transactionWelcome);
+        if (showNow) {
+            transactionWelcome.show(blackQQFragment);
+        }
+        transactionWelcome.commit();
+    }
+
+    public void initBlackGroupFragment(boolean showNow) {
+        FragmentTransaction transactionWelcome = getFragmentManager().beginTransaction();
+        if (blackGroupFragment == null) {
+            blackGroupFragment = new BlackGroupFragment();
+            transactionWelcome.add(R.id.main_activityLinearLayout, blackGroupFragment);
+        }
+        hideFragment(transactionWelcome);
+        if (showNow) {
+            transactionWelcome.show(blackGroupFragment);
+        }
+        transactionWelcome.commit();
+    }
+
 
     public void initGroupList(boolean showNow) {
 		onBackPressRunable = null;
@@ -299,6 +488,15 @@ public class MainActivity2 extends Activity {
 			messageFragment,
 			statusFragment,
 			quesFragment,
+			groupConfigFragment,
+			qqNotReplyFragment,
+			wordNotReplyFragment,
+			personInfoFragment,
+			masterFragment,
+			adminFragment,
+			groupAutoAllowFragment,
+			blackQQFragment,
+			blackGroupFragment,
 			settingsFragment
         };
         for (Fragment f : fs) {

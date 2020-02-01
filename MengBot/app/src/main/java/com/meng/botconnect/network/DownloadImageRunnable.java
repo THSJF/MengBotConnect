@@ -1,12 +1,14 @@
 package com.meng.botconnect.network;
 
 import android.app.*;
+import android.content.*;
 import android.graphics.*;
 import android.widget.*;
+import com.google.gson.*;
 import com.meng.botconnect.*;
+import com.meng.grzxConfig.MaterialDesign.javaBean.bilibili.user.*;
 import java.io.*;
 import java.net.*;
-import android.content.*;
 
 public class DownloadImageRunnable implements Runnable {
     private ImageView imageView;
@@ -39,9 +41,33 @@ public class DownloadImageRunnable implements Runnable {
                 }
                 downloadFile("http://q2.qlogo.cn/headimg_dl?bs=" + id + "&dst_uin=" + id + "&dst_uin=" + id + "&;dst_uin=" + id + "&spec=100&url_enc=0&referer=bu_interface&term_type=PC");
                 break;
+			case 2:
+				imageFile = new File(MainActivity2.mainFolder + "bilibili/" + id + ".jpg");
+                if (imageFile.exists()) {
+                    imageFile.delete();
+                }
+				downloadFile(getBilibiliHeadUrl(id));
         }
     }
-
+	
+	private String getBilibiliHeadUrl(long uid) {
+        try {
+            URL url = new URL("https://api.bilibili.com/x/space/acc/info?mid=" + uid + "&jsonp=jsonp");
+            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+            String line;
+            StringBuilder stringBuilder = new StringBuilder();
+            while ((line = reader.readLine()) != null) {
+                stringBuilder.append(line);
+            }
+            BilibiliPersonInfo bilibiliPersonInfoJavaBean = new Gson().fromJson(stringBuilder.toString(), BilibiliPersonInfo.class);
+            return bilibiliPersonInfoJavaBean.data.face;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
+	
     private void downloadFile(String url) {
         try {
             URL u = new URL(url);

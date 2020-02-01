@@ -3,16 +3,53 @@ package com.meng.botconnect.bean;
 import java.util.*;
 
 public class GroupConfig extends Object {
-    public long groupNumber = 0;
-    public boolean reply = true;
-    private ArrayList<Boolean> booleans = new ArrayList<Boolean>(16);
 
+	public static final int ID_MainSwitch=0;
+	public static final int ID_Repeater = 1;
+	public static final int ID_MoShenFuSong=2;
+	public static final int ID_BilibiliNewUpdate=3;
+	public static final int ID_Dice=4;
+	public static final int ID_SpellCollect=5;
+	public static final int ID_OCR=6;
+	public static final int ID_Barcode=7;
+	public static final int ID_Banner=8;
+	public static final int ID_CQCode=9;
+	public static final int ID_Music=10;
+	public static final int ID_PicSearch=11;
+	public static final int ID_BiliLink=12;
+	public static final int ID_Setu=13;
+	public static final int ID_PoHaiTu=14;
+	public static final int ID_NvZhuang=15;
+	public static final int ID_GuanZhuangBingDu=16;
+	public static final int ID_Seq=17;
+	public static final int ID_GroupDic=18;
+	public static final int ID_CheHuiMotu=19;
+	public static final int ID_PicEdit=20;
+	public static final int ID_UserCount=21;
+	public static final int ID_GroupCount=22;
+	public static final int ID_GroupCountChart=23;
+
+	public long groupNumber = 0;
+	public int f1=0;
     public int repeatMode = 0;
 
-    @Override
-    public int hashCode() {
-        return (int) (groupNumber / 10);
-    }
+	public boolean isFunctionEnable(int functionID) {
+		return (f1 & functionID) != 0;
+	}
+
+	public void setFunctionEnabled(int functionID, boolean enable) {
+		if (enable) {
+			f1 |= functionID;
+		} else {
+			f1 &= ~functionID;
+		}
+	}
+
+	@Override
+	public int hashCode() {
+		int i=0;
+		return super.hashCode();
+	}
 
     @Override
     public boolean equals(Object obj) {
@@ -20,67 +57,6 @@ public class GroupConfig extends Object {
             return false;
         }
         GroupConfig p = (GroupConfig) obj;
-        return this.groupNumber == p.groupNumber && this.reply == p.reply && this.repeatMode == p.repeatMode;
+        return this.groupNumber == p.groupNumber;
     }
-
-    public boolean isRepeat() {
-        return booleans.get(0);
-    }
-
-    public boolean isSetu() {
-        return booleans.get(1);
-    }
-
-    public boolean isPohai() {
-        return booleans.get(2);
-    }
-
-    public boolean isDic() {
-        return booleans.get(3);
-    }
-
-    public boolean isBilibiliCheck() {
-        return booleans.get(4);
-    }
-
-    public boolean isCuigeng() {
-        return booleans.get(5);
-    }
-
-    public boolean isSearchPic() {
-        return booleans.get(6);
-    }
-
-    public boolean isSleep() {
-        return booleans.get(7);
-    }
-
-    public boolean isRoll() {
-        return booleans.get(8);
-    }
-
-    public boolean isBarcode() {
-        return booleans.get(9);
-    }
-
-    public boolean isKuiping() {
-        return booleans.get(10);
-    }
-
-    public boolean isCqCode() {
-        return booleans.get(11);
-    }
-
-    public boolean isNvZhuang() {
-        return booleans.get(12);
-    }
-
-    public boolean isMoshenfusong() {
-        return booleans.get(13);
-    }
-
-    public boolean isCheHuiMoTu() {
-        return booleans.get(14);
-    }
-
 }
