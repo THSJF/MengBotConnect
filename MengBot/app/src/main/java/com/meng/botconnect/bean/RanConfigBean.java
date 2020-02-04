@@ -18,7 +18,7 @@ public class RanConfigBean {
 
 	public GroupConfig getGroupConfig(long fromGroup) {
         for (GroupConfig gc : groupConfigs) {
-            if (fromGroup == gc.groupNumber) {
+            if (fromGroup == gc.n) {
                 return gc;
             }
         }

@@ -197,11 +197,19 @@ public class CoolQ extends WebSocketClient {
 						}).start();
 					break;
 				case BotDataPack.opEnableFunction:
+					LogTool.t(MainActivity2.instance,"接收修改配置");
 					MainActivity2.instance.botData.ranConfig.getGroupConfig(rec.readLong()).setFunctionEnabled(rec.readInt(), rec.readInt() == 1);
+					MainActivity2.instance.runOnUiThread(new Runnable(){
+
+							@Override
+							public void run() {
+								MainActivity2.instance.groupConfigAdapter.notifyDataSetChanged();	
+							}
+						});
 					break;
 				case BotDataPack.addGroup:
 					GroupConfig g1c=new GroupConfig();
-					g1c.groupNumber = rec.readLong();
+					g1c.n = rec.readLong();
 					MainActivity2.instance.botData.ranConfig.groupConfigs.add(g1c);
 					MainActivity2.instance.runOnUiThread(new Runnable(){
 
@@ -296,7 +304,7 @@ public class CoolQ extends WebSocketClient {
 					Iterator<GroupConfig> iterator=MainActivity2.instance.botData.ranConfig.groupConfigs.iterator();
 					while (iterator.hasNext()) {
 						GroupConfig gcr=iterator.next();
-						if (gcr.groupNumber == gcn) {
+						if (gcr.n == gcn) {
 							iterator.remove();
 							break;
 						}

@@ -29,19 +29,19 @@ public class GroupConfig extends Object {
 	public static final int ID_GroupCount=22;
 	public static final int ID_GroupCountChart=23;
 
-	public long groupNumber = 0;
+	public long n=0;
+	public int s1=0;
 	public int f1=0;
-    public int repeatMode = 0;
 
 	public boolean isFunctionEnable(int functionID) {
-		return (f1 & functionID) != 0;
+		return (f1 & (1 << functionID)) != 0;
 	}
 
 	public void setFunctionEnabled(int functionID, boolean enable) {
 		if (enable) {
-			f1 |= functionID;
+			f1 |= (1 << functionID);
 		} else {
-			f1 &= ~functionID;
+			f1 &= ~(1 << functionID);
 		}
 	}
 
@@ -57,6 +57,6 @@ public class GroupConfig extends Object {
             return false;
         }
         GroupConfig p = (GroupConfig) obj;
-        return this.groupNumber == p.groupNumber;
+        return this.n == p.n;
     }
 }

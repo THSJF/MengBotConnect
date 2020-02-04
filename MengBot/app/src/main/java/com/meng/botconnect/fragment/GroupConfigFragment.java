@@ -13,6 +13,7 @@ import com.meng.botconnect.*;
 import com.meng.botconnect.bean.*;
 import com.meng.botconnect.network.*;
 import com.meng.grzxConfig.MaterialDesign.adapters.*;
+import com.meng.botconnect.lib.*;
 
 public class GroupConfigFragment extends Fragment {
 
@@ -68,26 +69,9 @@ public class GroupConfigFragment extends Fragment {
 						.setMultiChoiceItems(items, checkedItems, new DialogInterface.OnMultiChoiceClickListener() {
 							@Override
 							public void onClick(DialogInterface dialog, int which, boolean isChecked) {
-								MainActivity2.instance.CQ.send(BotDataPack.encode(BotDataPack.opEnableFunction).write(groupConfig.groupNumber).write(which + 1).write(isChecked ?1: 0));
-							}
-						})
-						.setNegativeButton("取消", new DialogInterface.OnClickListener() {
-							@Override
-							public void onClick(DialogInterface dialog, int which) {
-								dialog.dismiss();
-							}
-						})
-						.setPositiveButton("确定", new DialogInterface.OnClickListener() {
-							@Override
-							public void onClick(DialogInterface dialog, int which) {
-								for (int i = 0; i < checkedItems.length; i++) {
-									if (checkedItems[i]) {
-										Toast.makeText(getActivity(), "选中了" + i, Toast.LENGTH_SHORT).show();
-									}
+								MainActivity2.instance.CQ.send(BotDataPack.encode(BotDataPack.opEnableFunction).write(groupConfig.n).write(which + 1).write(isChecked ?1: 0));
+							//LogTool.t(MainActivity2.instance,"发送修改配置");
 								}
-								dialog.dismiss();
-							}
-
 						}).show();
 				}
 			}
@@ -103,7 +87,7 @@ public class GroupConfigFragment extends Fragment {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int which) {
                                 GroupConfig groupConfig = (GroupConfig) adapterView.getItemAtPosition(position);
-								MainActivity2.instance.CQ.send(BotDataPack.encode(BotDataPack.removeGroup).write(groupConfig.groupNumber));
+								MainActivity2.instance.CQ.send(BotDataPack.encode(BotDataPack.removeGroup).write(groupConfig.n));
 							}
                         }).setNegativeButton("取消", null).show();
 					return true;
@@ -127,7 +111,7 @@ public class GroupConfigFragment extends Fragment {
 										public void onClick(DialogInterface p11, int p2) {
 											long inputLong = Long.parseLong(editText.getText().toString());
 											for (GroupConfig groupConfig : MainActivity2.instance.botData.ranConfig.groupConfigs) {
-												if (groupConfig.groupNumber == inputLong) {
+												if (groupConfig.n == inputLong) {
 													return;
 												}
 											}

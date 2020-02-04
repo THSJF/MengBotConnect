@@ -31,9 +31,9 @@ public class GroupConfigAdapter extends BaseAdapter {
         int p_pos, i;// pivot->位索引;p_pos->轴值。
         if (low < high) {
             p_pos = low;
-            pivot = array.get(p_pos).groupNumber;
+            pivot = array.get(p_pos).n;
             for (i = low + 1; i <= high; i++)
-                if (array.get(i).groupNumber < pivot) {
+                if (array.get(i).n < pivot) {
                     p_pos++;
                     t = array.get(p_pos);
                     array.set(p_pos, array.get(i));
@@ -73,7 +73,7 @@ public class GroupConfigAdapter extends BaseAdapter {
         if (convertView == null) {
             convertView = context.getLayoutInflater().inflate(R.layout.list_item_image_text_switch, null);
             holder = new ViewHolder();
-            holder.groupNumber = (TextView) convertView.findViewById(R.id.group_reply_list_itemTextView);
+            holder.n = (TextView) convertView.findViewById(R.id.group_reply_list_itemTextView);
             holder.replySwitch = (Switch) convertView.findViewById(R.id.group_reply_list_itemSwitch);
             holder.imageView = (ImageView) convertView.findViewById(R.id.group_reply_list_itemImageView);
             convertView.setTag(holder);
@@ -81,41 +81,40 @@ public class GroupConfigAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
         final GroupConfig groupReply = groupRepliesList.get(position);
-        holder.groupNumber.setText(String.valueOf(groupReply.groupNumber));
+        holder.n.setText(String.valueOf(groupReply.n));
         holder.replySwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 
 				@Override
 				public void onCheckedChanged(CompoundButton p1, boolean p2) {
-					if (p2) {
-						MainActivity2.instance.CQ.send(BotDataPack.encode(BotDataPack.opEnableFunction).write(groupReply.groupNumber).write(GroupConfig.ID_MainSwitch).write(1));
-					} else {
-						MainActivity2.instance.CQ.send(BotDataPack.encode(BotDataPack.opEnableFunction).write(groupReply.groupNumber).write(GroupConfig.ID_MainSwitch).write(0)); 
+					if (groupReply.isFunctionEnable(GroupConfig.ID_MainSwitch) != p2) {
+						groupReply.setFunctionEnabled(GroupConfig.ID_MainSwitch, p2);
+						MainActivity2.instance.CQ.send(BotDataPack.encode(BotDataPack.opEnableFunction).write(groupReply.n).write(GroupConfig.ID_MainSwitch).write(p2 ?1: 0));
 					}
 				}
 			});
 
         holder.replySwitch.setChecked(groupReply.isFunctionEnable(GroupConfig.ID_MainSwitch));
-        //    if (hashMap.get(groupReply.groupNumber) == null) {
-        File imageFile = new File(MainActivity2.mainFolder + "group/" + groupReply.groupNumber + ".jpg");
+        //    if (hashMap.get(groupReply.n) == null) {
+        File imageFile = new File(MainActivity2.mainFolder + "group/" + groupReply.n + ".jpg");
         if (imageFile.exists()) {
             holder.imageView.setImageBitmap(BitmapFactory.decodeFile(imageFile.getAbsolutePath()));
         } else {
-			MainActivity2.instance.threadPool.execute(new DownloadImageRunnable(context, holder.imageView, groupReply.groupNumber, 0));
+			MainActivity2.instance.threadPool.execute(new DownloadImageRunnable(context, holder.imageView, groupReply.n, 0));
         }
         holder.imageView.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					MainActivity2.instance.threadPool.execute(new DownloadImageRunnable(context, holder.imageView, groupReply.groupNumber, 0));
+					MainActivity2.instance.threadPool.execute(new DownloadImageRunnable(context, holder.imageView, groupReply.n, 0));
 				}
 			});
         //     }
-        //      holder.imageView.setImageBitmap(hashMap.get(groupReply.groupNumber));
+        //      holder.imageView.setImageBitmap(hashMap.get(groupReply.n));
         return convertView;
     }
 
     private class ViewHolder {
         private ImageView imageView;
-        private TextView groupNumber;
+        private TextView n;
         private Switch replySwitch;
     }
 }
