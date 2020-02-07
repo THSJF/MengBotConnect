@@ -87,8 +87,8 @@ public class GroupConfigAdapter extends BaseAdapter {
 				@Override
 				public void onCheckedChanged(CompoundButton p1, boolean p2) {
 					if (groupReply.isFunctionEnable(GroupConfig.ID_MainSwitch) != p2) {
-						groupReply.setFunctionEnabled(GroupConfig.ID_MainSwitch, p2);
 						MainActivity2.instance.CQ.send(BotDataPack.encode(BotDataPack.opEnableFunction).write(groupReply.n).write(GroupConfig.ID_MainSwitch).write(p2 ?1: 0));
+						p1.setChecked(!p2);
 					}
 				}
 			});

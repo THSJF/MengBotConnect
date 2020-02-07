@@ -6,6 +6,7 @@ import com.meng.botconnect.*;
 import com.meng.botconnect.lib.*;
 import com.meng.botconnect.network.*;
 import java.io.*;
+import java.util.*;
 
 public class BotInfo {
 	private long onLoginQQ;
@@ -122,10 +123,28 @@ public class BotInfo {
 
 	public void setOnLoginQQ(final long onLoginQQ) {
 		this.onLoginQQ = onLoginQQ;
+		MainActivity2.instance.menusList.clear();
+		if (onLoginQQ == 2528419891L) {	
+			Collections.addAll(MainActivity2.instance.menusList, new String[]{
+								   "群消息",
+								   "状态",
+								   "题库",
+								   "设置",
+								   "退出"});
+		} else if (onLoginQQ == 2089693971) {
+			Collections.addAll(MainActivity2.instance.menusList, new String[]{
+								   "群消息",
+								   "状态",
+								   "群配置","不回复的QQ","不回复的字","飞机佬名单","Master","Admin",
+								   "自动同意进群","黑名单QQ","黑名单群",
+								   "设置",
+								   "退出"});
+		}
 		MainActivity2.instance.runOnUiThread(new Runnable(){
 
 				@Override
 				public void run() {
+					MainActivity2.instance.adpter.notifyDataSetChanged();
 					MainActivity2.instance.addHeaderView();
 					qq.setText(String.valueOf(onLoginQQ));
 				}

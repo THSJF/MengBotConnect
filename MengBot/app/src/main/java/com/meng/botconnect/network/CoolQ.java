@@ -22,8 +22,17 @@ public class CoolQ extends WebSocketClient {
 	public static String ip=null;
 	public static String port=null;
 
+	private ScrollView sv;
 	public CoolQ() throws Exception {
 		super(new URI(String.format("ws://%s:%s", ip, port)));
+	}
+
+	public void setSv(ScrollView sv) {
+		this.sv = sv;
+	}
+
+	public ScrollView getSv() {
+		return sv;
 	}
 
 	@Override
@@ -197,13 +206,113 @@ public class CoolQ extends WebSocketClient {
 						}).start();
 					break;
 				case BotDataPack.opEnableFunction:
-					LogTool.t(MainActivity2.instance,"接收修改配置");
-					MainActivity2.instance.botData.ranConfig.getGroupConfig(rec.readLong()).setFunctionEnabled(rec.readInt(), rec.readInt() == 1);
+					LogTool.t(MainActivity2.instance, "接收修改配置");
+					int f;
+					boolean e;
+					MainActivity2.instance.botData.ranConfig.getGroupConfig(rec.readLong()).setFunctionEnabled(f = rec.readInt(), e = (rec.readInt() == 1));
+					final int fid=f;
+					final boolean enable=e;
 					MainActivity2.instance.runOnUiThread(new Runnable(){
 
 							@Override
 							public void run() {
-								MainActivity2.instance.groupConfigAdapter.notifyDataSetChanged();	
+								MainActivity2.instance.groupConfigAdapter.notifyDataSetChanged();
+								if (sv != null) {
+									switch (fid) {
+										case 1:
+											Switch s1=(Switch) sv.findViewById(R.id.group_func_setSwitch1);
+											s1.setChecked(enable);
+											break;
+										case 2:
+											Switch s2=(Switch) sv.findViewById(R.id.group_func_setSwitch2);
+											s2.setChecked(enable);
+											break;
+										case 3:
+											Switch s3=(Switch) sv.findViewById(R.id.group_func_setSwitch3);
+											s3.setChecked(enable);
+											break;
+										case 4:
+											Switch s4=(Switch) sv.findViewById(R.id.group_func_setSwitch4);
+											s4.setChecked(enable);
+											break;
+										case 5:
+											Switch s5=(Switch) sv.findViewById(R.id.group_func_setSwitch5);
+											s5.setChecked(enable);
+											break;
+										case 6:
+											Switch s6=(Switch) sv.findViewById(R.id.group_func_setSwitch6);
+											s6.setChecked(enable);
+											break;
+										case 7:
+											Switch s7=(Switch) sv.findViewById(R.id.group_func_setSwitch7);
+											s7.setChecked(enable);
+											break;
+										case 8:
+											Switch s8=(Switch) sv.findViewById(R.id.group_func_setSwitch8);
+											s8.setChecked(enable);
+											break;
+										case 9:
+											Switch s9=(Switch) sv.findViewById(R.id.group_func_setSwitch9);
+											s9.setChecked(enable);
+											break;
+										case 10:
+											Switch s10=(Switch) sv.findViewById(R.id.group_func_setSwitch10);
+											s10.setChecked(enable);
+											break;
+										case 11:
+											Switch s11=(Switch) sv.findViewById(R.id.group_func_setSwitch11);
+											s11.setChecked(enable);
+											break;
+										case 12:
+											Switch s12=(Switch) sv.findViewById(R.id.group_func_setSwitch12);
+											s12.setChecked(enable);
+											break;
+										case 13:
+											Switch s13=(Switch) sv.findViewById(R.id.group_func_setSwitch13);
+											s13.setChecked(enable);
+											break;
+										case 14:
+											Switch s14=(Switch) sv.findViewById(R.id.group_func_setSwitch14);
+											s14.setChecked(enable);
+											break;
+										case 15:
+											Switch s15=(Switch) sv.findViewById(R.id.group_func_setSwitch15);
+											s15.setChecked(enable);
+											break;
+										case 16:
+											Switch s16=(Switch) sv.findViewById(R.id.group_func_setSwitch16);
+											s16.setChecked(enable);
+											break;
+										case 17:
+											Switch s17=(Switch) sv.findViewById(R.id.group_func_setSwitch17);
+											s17.setChecked(enable);
+											break;
+										case 18:
+											Switch s18=(Switch) sv.findViewById(R.id.group_func_setSwitch18);
+											s18.setChecked(enable);
+											break;
+										case 19:
+											Switch s19=(Switch) sv.findViewById(R.id.group_func_setSwitch19);
+											s19.setChecked(enable);
+											break;
+										case 20:
+											Switch s20=(Switch) sv.findViewById(R.id.group_func_setSwitch20);
+											s20.setChecked(enable);
+											break;
+										case 21:
+											Switch s21=(Switch) sv.findViewById(R.id.group_func_setSwitch21);
+											s21.setChecked(enable);
+											break;
+										case 22:
+											Switch s22=(Switch) sv.findViewById(R.id.group_func_setSwitch22);
+											s22.setChecked(enable);
+											break;
+										case 23:
+											Switch s23=(Switch) sv.findViewById(R.id.group_func_setSwitch23);
+											s23.setChecked(enable);
+											break;
+									}
+								}
 							}
 						});
 					break;

@@ -1,0 +1,563 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent">
+
+	<LinearLayout
+		android:layout_gravity="center"
+		android:orientation="vertical"
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent">
+
+		<LinearLayout
+			android:orientation="horizontal"
+			android:layout_width="fill_parent"
+			android:layout_height="fill_parent">
+
+			<TextView
+				android:layout_weight="5"
+				android:text="复读"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"/>
+
+			<Switch
+				android:id="@+id/group_func_setSwitch1"
+				android:layout_weight="1"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"/>
+
+		</LinearLayout>
+
+		<View
+			android:background="?android:attr/dividerVertical"
+			android:layout_width="match_parent"
+			android:layout_height="1dp"/>
+		
+		<LinearLayout
+			android:orientation="horizontal"
+			android:layout_width="fill_parent"
+			android:layout_height="fill_parent">
+
+			<TextView
+				android:layout_weight="5"
+				android:text="魔神复诵"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"/>
+
+			<Switch
+				android:id="@+id/group_func_setSwitch2"
+				android:layout_weight="1"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"/>
+
+		</LinearLayout>
+
+		<View
+			android:background="?android:attr/dividerVertical"
+			android:layout_width="match_parent"
+			android:layout_height="1dp"/>
+		
+		<LinearLayout
+			android:orientation="horizontal"
+			android:layout_width="fill_parent"
+			android:layout_height="fill_parent">
+
+			<TextView
+				android:layout_weight="5"
+				android:text="屑站更新"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"/>
+
+			<Switch
+				android:id="@+id/group_func_setSwitch3"
+				android:layout_weight="1"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"/>
+
+		</LinearLayout>
+
+		<View
+			android:background="?android:attr/dividerVertical"
+			android:layout_width="match_parent"
+			android:layout_height="1dp"/>
+		
+		<LinearLayout
+			android:orientation="horizontal"
+			android:layout_width="fill_parent"
+			android:layout_height="fill_parent">
+
+			<TextView
+				android:layout_weight="5"
+				android:text="Dice"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"/>
+
+			<Switch
+				android:id="@+id/group_func_setSwitch4"
+				android:layout_weight="1"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"/>
+
+		</LinearLayout>
+
+		<View
+			android:background="?android:attr/dividerVertical"
+			android:layout_width="match_parent"
+			android:layout_height="1dp"/>
+		
+		<LinearLayout
+			android:orientation="horizontal"
+			android:layout_width="fill_parent"
+			android:layout_height="fill_parent">
+
+			<TextView
+				android:layout_weight="5"
+				android:text="符卡收集"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"/>
+
+			<Switch
+				android:id="@+id/group_func_setSwitch5"
+				android:layout_weight="1"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"/>
+
+		</LinearLayout>
+
+		<View
+			android:background="?android:attr/dividerVertical"
+			android:layout_width="match_parent"
+			android:layout_height="1dp"/>
+		
+		<LinearLayout
+			android:orientation="horizontal"
+			android:layout_width="fill_parent"
+			android:layout_height="fill_parent">
+
+			<TextView
+				android:layout_weight="5"
+				android:text="ocr"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"/>
+
+			<Switch
+				android:id="@+id/group_func_setSwitch6"
+				android:layout_weight="1"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"/>
+
+		</LinearLayout>
+
+		<View
+			android:background="?android:attr/dividerVertical"
+			android:layout_width="match_parent"
+			android:layout_height="1dp"/>
+		
+		<LinearLayout
+			android:orientation="horizontal"
+			android:layout_width="fill_parent"
+			android:layout_height="fill_parent">
+
+			<TextView
+				android:layout_weight="5"
+				android:text="条形码/二维码"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"/>
+
+			<Switch
+				android:id="@+id/group_func_setSwitch7"
+				android:layout_weight="1"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"/>
+
+		</LinearLayout>
+
+		<View
+			android:background="?android:attr/dividerVertical"
+			android:layout_width="match_parent"
+			android:layout_height="1dp"/>
+		
+		<LinearLayout
+			android:orientation="horizontal"
+			android:layout_width="fill_parent"
+			android:layout_height="fill_parent">
+
+			<TextView
+				android:layout_weight="5"
+				android:text="禁言模块"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"/>
+
+			<Switch
+				android:id="@+id/group_func_setSwitch8"
+				android:layout_weight="1"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"/>
+
+		</LinearLayout>
+
+		<View
+			android:background="?android:attr/dividerVertical"
+			android:layout_width="match_parent"
+			android:layout_height="1dp"/>
+		
+		<LinearLayout
+			android:orientation="horizontal"
+			android:layout_width="fill_parent"
+			android:layout_height="fill_parent">
+
+			<TextView
+				android:layout_weight="5"
+				android:text="CQ码"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"/>
+
+			<Switch
+				android:id="@+id/group_func_setSwitch9"
+				android:layout_weight="1"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"/>
+
+		</LinearLayout>
+
+		<View
+			android:background="?android:attr/dividerVertical"
+			android:layout_width="match_parent"
+			android:layout_height="1dp"/>
+		
+		<LinearLayout
+			android:orientation="horizontal"
+			android:layout_width="fill_parent"
+			android:layout_height="fill_parent">
+
+			<TextView
+				android:layout_weight="5"
+				android:text="原曲认知"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"/>
+
+			<Switch
+				android:id="@+id/group_func_setSwitch10"
+				android:layout_weight="1"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"/>
+
+		</LinearLayout>
+
+		<View
+			android:background="?android:attr/dividerVertical"
+			android:layout_width="match_parent"
+			android:layout_height="1dp"/>
+		
+		<LinearLayout
+			android:orientation="horizontal"
+			android:layout_width="fill_parent"
+			android:layout_height="fill_parent">
+
+			<TextView
+				android:layout_weight="5"
+				android:text="搜图"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"/>
+
+			<Switch
+				android:id="@+id/group_func_setSwitch11"
+				android:layout_weight="1"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"/>
+
+		</LinearLayout>
+
+		<View
+			android:background="?android:attr/dividerVertical"
+			android:layout_width="match_parent"
+			android:layout_height="1dp"/>
+		
+		<LinearLayout
+			android:orientation="horizontal"
+			android:layout_width="fill_parent"
+			android:layout_height="fill_parent">
+
+			<TextView
+				android:layout_weight="5"
+				android:text="屑站链接"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"/>
+
+			<Switch
+				android:id="@+id/group_func_setSwitch12"
+				android:layout_weight="1"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"/>
+
+		</LinearLayout>
+
+		<View
+			android:background="?android:attr/dividerVertical"
+			android:layout_width="match_parent"
+			android:layout_height="1dp"/>
+		
+		<LinearLayout
+			android:orientation="horizontal"
+			android:layout_width="fill_parent"
+			android:layout_height="fill_parent">
+
+			<TextView
+				android:layout_weight="5"
+				android:text="色图"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"/>
+
+			<Switch
+				android:id="@+id/group_func_setSwitch13"
+				android:layout_weight="1"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"/>
+
+		</LinearLayout>
+
+		<View
+			android:background="?android:attr/dividerVertical"
+			android:layout_width="match_parent"
+			android:layout_height="1dp"/>
+		
+		<LinearLayout
+			android:orientation="horizontal"
+			android:layout_width="fill_parent"
+			android:layout_height="fill_parent">
+
+			<TextView
+				android:layout_weight="5"
+				android:text="迫害图"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"/>
+
+			<Switch
+				android:id="@+id/group_func_setSwitch14"
+				android:layout_weight="1"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"/>
+
+		</LinearLayout>
+
+		<View
+			android:background="?android:attr/dividerVertical"
+			android:layout_width="match_parent"
+			android:layout_height="1dp"/>
+		
+		<LinearLayout
+			android:orientation="horizontal"
+			android:layout_width="fill_parent"
+			android:layout_height="fill_parent">
+
+			<TextView
+				android:layout_weight="5"
+				android:text="女装"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"/>
+
+			<Switch
+				android:id="@+id/group_func_setSwitch15"
+				android:layout_weight="1"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"/>
+
+		</LinearLayout>
+
+		<View
+			android:background="?android:attr/dividerVertical"
+			android:layout_width="match_parent"
+			android:layout_height="1dp"/>
+		
+		<LinearLayout
+			android:orientation="horizontal"
+			android:layout_width="fill_parent"
+			android:layout_height="fill_parent">
+
+			<TextView
+				android:layout_weight="5"
+				android:text="病毒"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"/>
+
+			<Switch
+				android:id="@+id/group_func_setSwitch16"
+				android:layout_weight="1"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"/>
+
+		</LinearLayout>
+
+		<View
+			android:background="?android:attr/dividerVertical"
+			android:layout_width="match_parent"
+			android:layout_height="1dp"/>
+		
+		<LinearLayout
+			android:orientation="horizontal"
+			android:layout_width="fill_parent"
+			android:layout_height="fill_parent">
+
+			<TextView
+				android:layout_weight="5"
+				android:text="接龙"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"/>
+
+			<Switch
+				android:id="@+id/group_func_setSwitch17"
+				android:layout_weight="1"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"/>
+
+		</LinearLayout>
+
+		<View
+			android:background="?android:attr/dividerVertical"
+			android:layout_width="match_parent"
+			android:layout_height="1dp"/>
+		
+		<LinearLayout
+			android:orientation="horizontal"
+			android:layout_width="fill_parent"
+			android:layout_height="fill_parent">
+
+			<TextView
+				android:layout_weight="5"
+				android:text="群词库"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"/>
+
+			<Switch
+				android:id="@+id/group_func_setSwitch18"
+				android:layout_weight="1"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"/>
+
+		</LinearLayout>
+
+		<View
+			android:background="?android:attr/dividerVertical"
+			android:layout_width="match_parent"
+			android:layout_height="1dp"/>
+		
+		<LinearLayout
+			android:orientation="horizontal"
+			android:layout_width="fill_parent"
+			android:layout_height="fill_parent">
+
+			<TextView
+				android:layout_weight="5"
+				android:text="撤回膜图"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"/>
+
+			<Switch
+				android:id="@+id/group_func_setSwitch19"
+				android:layout_weight="1"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"/>
+
+		</LinearLayout>
+
+		<View
+			android:background="?android:attr/dividerVertical"
+			android:layout_width="match_parent"
+			android:layout_height="1dp"/>
+		
+		<LinearLayout
+			android:orientation="horizontal"
+			android:layout_width="fill_parent"
+			android:layout_height="fill_parent">
+
+			<TextView
+				android:layout_weight="5"
+				android:text="表情包"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"/>
+
+			<Switch
+				android:id="@+id/group_func_setSwitch20"
+				android:layout_weight="1"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"/>
+
+		</LinearLayout>
+
+		<View
+			android:background="?android:attr/dividerVertical"
+			android:layout_width="match_parent"
+			android:layout_height="1dp"/>
+		
+		<LinearLayout
+			android:orientation="horizontal"
+			android:layout_width="fill_parent"
+			android:layout_height="fill_parent">
+
+			<TextView
+				android:layout_weight="5"
+				android:text="用户统计"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"/>
+
+			<Switch
+				android:id="@+id/group_func_setSwitch21"
+				android:layout_weight="1"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"/>
+
+		</LinearLayout>
+
+		<View
+			android:background="?android:attr/dividerVertical"
+			android:layout_width="match_parent"
+			android:layout_height="1dp"/>
+		
+		<LinearLayout
+			android:orientation="horizontal"
+			android:layout_width="fill_parent"
+			android:layout_height="fill_parent">
+
+			<TextView
+				android:layout_weight="5"
+				android:text="群统计"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"/>
+
+			<Switch
+				android:id="@+id/group_func_setSwitch22"
+				android:layout_weight="1"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"/>
+
+		</LinearLayout>
+
+		<View
+			android:background="?android:attr/dividerVertical"
+			android:layout_width="match_parent"
+			android:layout_height="1dp"/>
+		
+		<LinearLayout
+			android:orientation="horizontal"
+			android:layout_width="fill_parent"
+			android:layout_height="fill_parent">
+
+			<TextView
+				android:layout_weight="5"
+				android:text="群统计(图表)"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"/>
+
+			<Switch
+				android:id="@+id/group_func_setSwitch23"
+				android:layout_weight="1"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"/>
+
+		</LinearLayout>
+
+	</LinearLayout>
+
+</ScrollView>
+

@@ -2,7 +2,7 @@ package com.meng.botconnect.bean;
 import java.util.*;
 import com.meng.botconnect.*;
 
-public class BotData {
+public class BotQQMsgData {
 	public ArrayList<Group> groupList=new ArrayList<>();
 	public RanConfigBean ranConfig=new RanConfigBean();
 

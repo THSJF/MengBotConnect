@@ -25,6 +25,8 @@ public class MainActivity2 extends Activity {
     private final String logString = "以下为操作记录：\n";
     private DrawerLayout mDrawerLayout;
     private ListView lvDrawer;
+	public ArrayAdapter<String> adpter;
+	
 	public View headView;
     private RelativeLayout rightRelativeLayout;
     private ActionBarDrawerToggle mDrawerToggle;
@@ -41,16 +43,10 @@ public class MainActivity2 extends Activity {
 	public static String mainFolder;
 	public static final int SELECT_FILE_REQUEST_CODE = 822;
 
-	private final String[] menus = new String[]{
-		"群消息",
-		"状态",
-		"题库",
-		"群配置","不回复的QQ","不回复的字","飞机佬名单","Master","Admin",
-		"自动同意进群","黑名单QQ","黑名单群",
-		"设置",
-		"退出"};
+	public ArrayList<String> menusList=new ArrayList<String>();
+	
 	public ActionBar ab;
-	public BotData botData=new BotData();
+	public BotQQMsgData botData=new BotQQMsgData();
 	public Gson gson;
 	public Runnable onBackPressRunable=null;
 
@@ -81,6 +77,11 @@ public class MainActivity2 extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
         instance = this;
+		menusList.add("群消息");
+		menusList.add("设置");
+		menusList.add("退出");
+
+		
 		mainFolder = Environment.getExternalStorageDirectory() + "/Pictures/grzx/";
 		ab = getActionBar();
         ab.setDisplayHomeAsUpEnabled(true);
@@ -237,7 +238,8 @@ public class MainActivity2 extends Activity {
         };
         mDrawerLayout.setDrawerListener(mDrawerToggle);
         mDrawerToggle.syncState();
-		lvDrawer.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, android.R.id.text1, menus));
+		adpter=new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, android.R.id.text1, menusList);
+		lvDrawer.setAdapter(adpter);
 
 		lvDrawer.setOnItemClickListener(new OnItemClickListener(){
 
