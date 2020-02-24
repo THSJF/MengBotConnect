@@ -1,5 +1,11 @@
 package com.meng.botconnect.lib;
 
+import android.annotation.*;
+import android.content.*;
+import android.database.*;
+import android.net.*;
+import android.os.*;
+import android.provider.*;
 import java.io.*;
 import java.nio.charset.*;
 import java.security.*;
@@ -10,6 +16,81 @@ public class Tools {
 
 	public static final String DEFAULT_ENCODING = "UTF-8";
 
+	public static class ContentHelper {
+		@TargetApi(Build.VERSION_CODES.KITKAT)
+		public static String absolutePathFromUri(final Context context, final Uri uri) {
+			final boolean isKitKat=Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT;
+			if (isKitKat && DocumentsContract.isDocumentUri(context, uri)) {
+				if (isExternalStorageDocument(uri)) {
+					final String docId=DocumentsContract.getDocumentId(uri);
+					final String[] split=docId.split(":");
+					final String type=split[0];
+					if ("primary".equalsIgnoreCase(type)) {
+						return Environment.getExternalStorageDirectory() + "/" + split[1];
+					}
+				} else if (isDownloadsDocument(uri)) {
+					final String id=DocumentsContract.getDocumentId(uri);
+					final Uri contentUri=ContentUris.withAppendedId(
+                        Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
+					return getDataColumn(context, contentUri, null, null);
+				} else if (isMediaDocument(uri)) {
+					final String docId=DocumentsContract.getDocumentId(uri);
+					final String[] split=docId.split(":");
+					final String type=split[0];
+					Uri contentUri=null;
+					if ("image".equals(type)) {
+						contentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+					} else if ("video".equals(type)) {
+						contentUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
+					} else if ("audio".equals(type)) {
+						contentUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+					}
+					final String selection="_id=?";
+					final String[] selectionArgs=new String[]{
+                        split[1]
+					};
+					return getDataColumn(context, contentUri, selection, selectionArgs);
+				}
+			} else if ("content".equalsIgnoreCase(uri.getScheme())) {
+				return getDataColumn(context, uri, null, null);
+			} else if ("file".equalsIgnoreCase(uri.getScheme())) {
+				return uri.getPath();
+			}
+			return null;
+		}
+
+		private static String getDataColumn(Context context, Uri uri, String selection, String[] selectionArgs) {
+			Cursor cursor=null;
+			final String column="_data";
+			final String[] projection={
+                column
+			};
+			try {
+				cursor = context.getContentResolver().query(uri, projection, selection, selectionArgs, null);
+				if (cursor != null && cursor.moveToFirst()) {
+					return cursor.getString(cursor.getColumnIndexOrThrow(column));
+				}
+			} finally {
+				if (cursor != null) {
+					cursor.close();
+				}
+			}
+			return null;
+		}
+
+		private static boolean isExternalStorageDocument(Uri uri) {
+			return "com.android.externalstorage.documents".equals(uri.getAuthority());
+		}
+
+		private static boolean isDownloadsDocument(Uri uri) {
+			return "com.android.providers.downloads.documents".equals(uri.getAuthority());
+		}
+
+		private static boolean isMediaDocument(Uri uri) {
+			return "com.android.providers.media.documents".equals(uri.getAuthority());
+		}
+	}
+	
 	public static class FileTool {
 		public static String readString(String fileName) {
 			return readString(new File(fileName));
@@ -465,13 +546,29 @@ public class Tools {
 		}
 
 		public static byte[] getBytes(float f) {
-			return getBytes(Float.floatToIntBits(f));
+			int i = Float.floatToIntBits(f);
+			byte[] bs=new byte[4];
+			bs[0] = (byte) ((i >> 24) & 0xff);
+			bs[1] = (byte) ((i >> 16) & 0xff);
+			bs[2] = (byte) ((i >> 8) & 0xff);
+			bs[3] = (byte) ((i >> 0) & 0xff);
+			return bs;	
 		}
 
-		public static byte[] getBytes(Double d) {
-			return getBytes(Double.doubleToLongBits(d));
+		public static byte[] getBytes(double d) {
+			long l = Double.doubleToLongBits(d);
+			byte[] bs = new byte[8];
+			bs[0] = (byte) ((l >> 56) & 0xff);
+			bs[1] = (byte) ((l >> 48) & 0xff);
+			bs[2] = (byte) ((l >> 40) & 0xff);
+			bs[3] = (byte) ((l >> 32) & 0xff);
+			bs[4] = (byte) ((l >> 24) & 0xff);
+			bs[5] = (byte) ((l >> 16) & 0xff);
+			bs[6] = (byte) ((l >> 8) & 0xff);
+			bs[7] = (byte) ((l >> 0) & 0xff);
+			return bs;
 		}
-
+		
 		public static byte[] getBytes(String s) {
 			try {
 				return s.getBytes(DEFAULT_ENCODING);

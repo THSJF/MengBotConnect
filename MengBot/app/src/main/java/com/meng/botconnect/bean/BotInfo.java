@@ -129,6 +129,7 @@ public class BotInfo {
 								   "群消息",
 								   "状态",
 								   "题库",
+								   "软件新版本上传",
 								   "设置",
 								   "退出"});
 		} else if (onLoginQQ == 2089693971) {

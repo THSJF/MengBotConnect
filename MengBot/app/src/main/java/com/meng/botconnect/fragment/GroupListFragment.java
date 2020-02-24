@@ -42,7 +42,7 @@ public class GroupListFragment extends Fragment {
 								switch (which) {
 									case 0:
 										g.removeByUser = true;
-										((BaseAdapter)MainActivity2.instance.messageFragment.lv.getAdapter()).notifyDataSetChanged();
+										((BaseAdapter)MainActivity2.instance.getFragment(GroupListFragment.class).lv.getAdapter()).notifyDataSetChanged();
 										break;
 									case 1:
 										ClipboardManager cm2 = (ClipboardManager)getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
@@ -90,7 +90,7 @@ public class GroupListFragment extends Fragment {
 
 						@Override
 						public void run() {
-							MainActivity2.instance.initGroupList(true);
+							MainActivity2.instance.showFragment(GroupListFragment.class);
 							if (MainActivity.sharedPreference.getBoolean("useLightTheme")) {
 								MainActivity2.instance.ab.setBackgroundDrawable(new ColorDrawable(Color.argb(0xff, 0x3f, 0x51, 0xb5)));
 							} else {

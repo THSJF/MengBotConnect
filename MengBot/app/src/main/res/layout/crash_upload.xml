@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:orientation="vertical">
+
+	<TextView
+		android:id="@+id/crash_uploadTextView"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"/>
+
+	<EditText
+		android:hint="更新描述"
+		android:id="@+id/crash_uploadEdittext"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"/>
+
+	<LinearLayout
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal">
+
+		<Button
+			android:id="@+id/crash_uploadButton_select"
+			android:layout_weight="5"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:text="选择apk文件"/>
+
+		<Button
+			android:id="@+id/crash_uploadButton_upload"
+			android:layout_weight="1"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:text="上传"/>
+
+	</LinearLayout>
+
+</LinearLayout>
+

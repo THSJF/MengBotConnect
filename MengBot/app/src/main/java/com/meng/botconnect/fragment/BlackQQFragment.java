@@ -100,7 +100,7 @@ public class BlackQQFragment extends Fragment {
 													return;
 												}
 											}
-											MainActivity2.instance.CQ.send(BotDataPack.encode(BotDataPack.removeBlackQQ).write(userInput));
+											MainActivity2.instance.CQ.send(BotDataPack.encode(BotDataPack.addBlackQQ).write(userInput));
 
 										}
 									}).setNegativeButton("取消", null).show();

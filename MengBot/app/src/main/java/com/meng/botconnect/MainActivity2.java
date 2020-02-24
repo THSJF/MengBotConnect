@@ -31,11 +31,7 @@ public class MainActivity2 extends Activity {
     private RelativeLayout rightRelativeLayout;
     private ActionBarDrawerToggle mDrawerToggle;
     private DrawerArrowDrawable drawerArrow;
-    public GroupListFragment messageFragment;
-    private StatusFragment statusFragment;
-    private SettingsFragment settingsFragment;
-	public QuestionFragment quesFragment;
-	public TextView rightText;
+    public TextView rightText;
 	public ConcurrentHashMap<Long,ChatFragment> chatFragments=new ConcurrentHashMap<>();
 	public FragmentManager fragmentManager;
 	public CoolQ CQ;
@@ -50,7 +46,7 @@ public class MainActivity2 extends Activity {
 	public Gson gson;
 	public Runnable onBackPressRunable=null;
 
-
+	private HashMap<String,Fragment> fragments=new HashMap<>();
 	public GroupConfigAdapter groupConfigAdapter;
     public QQAccountAdapter qqNotReplyAdapter;
     public ArrayAdapter wordNotReplyAdapter;
@@ -62,16 +58,6 @@ public class MainActivity2 extends Activity {
     public QQAccountAdapter blackQQAdapter;
     public QQAccountAdapter blackGroupAdapter;
 
-    public GroupConfigFragment groupConfigFragment;
-    public QQNotReplyFragment qqNotReplyFragment;
-    public WordNotReplyFragment wordNotReplyFragment;
-    public PersonInfoFragment personInfoFragment;
-    public MasterFragment masterFragment;
-    public AdminFragment adminFragment;
-    public GroupAutoAllowFragment groupAutoAllowFragment;
-    public BlackQQFragment blackQQFragment;
-    public BlackGroupFragment blackGroupFragment;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,8 +66,6 @@ public class MainActivity2 extends Activity {
 		menusList.add("群消息");
 		menusList.add("设置");
 		menusList.add("退出");
-
-		
 		mainFolder = Environment.getExternalStorageDirectory() + "/Pictures/grzx/";
 		ab = getActionBar();
         ab.setDisplayHomeAsUpEnabled(true);
@@ -96,16 +80,6 @@ public class MainActivity2 extends Activity {
 		GsonBuilder gb = new GsonBuilder();
 		gb.setLongSerializationPolicy(LongSerializationPolicy.STRING);
 		gson = gb.create();
-		initQQFragment(false);
-        initWordFragment(false);
-        initPersonFragment(false);
-        initMasterFragment(false);
-        initAdminFragment(false);
-        initAllowFragment(false);
-        initBlackQQFragment(false);
-        initBlackGroupFragment(false);
-        initSettingsFragment(false);
-        initGroupConfigFragment(false);
 		try {
 			LogTool.t(MainActivity2.instance, String.format("ws://%s:%s", CoolQ.ip, CoolQ.port));
 			CQ = new CoolQ();
@@ -113,6 +87,16 @@ public class MainActivity2 extends Activity {
 		} catch (Exception e) {
 			LogTool.e(this, e);
 		}
+		showFragment(GroupConfigFragment.class);
+		showFragment(QQNotReplyFragment.class);
+		showFragment(WordNotReplyFragment.class);
+		showFragment(PersonInfoFragment.class);
+		showFragment(MasterFragment.class);
+		showFragment(AdminFragment.class);
+		showFragment(GroupAutoAllowFragment.class);
+		showFragment(BlackQQFragment.class);
+		showFragment(BlackGroupFragment.class);
+		showFragment(GroupListFragment.class);
     }
 
 	public void addHeaderView() {
@@ -155,7 +139,7 @@ public class MainActivity2 extends Activity {
 					if (g.getMenberByQQ(bm.getFromQQ()) == null) {
 						CQ.getGroupMemberInfo(g.id, bm.getFromQQ());
 					}
-					((BaseAdapter) messageFragment.lv.getAdapter()).notifyDataSetChanged();
+					((BaseAdapter) getFragment(GroupListFragment.class).lv.getAdapter()).notifyDataSetChanged();
 					ChatFragment cf=chatFragments.get(bm.getGroup());
 					if (cf == null) {
 						return;
@@ -178,6 +162,28 @@ public class MainActivity2 extends Activity {
 		g.onGettingInfo.remove(m.getQqId());
 	}
 
+	public <T extends Fragment> T getFragment(Class<T> c) {
+		return (T)fragments.get(c.getName());
+	}
+
+	public <T extends Fragment> void showFragment(Class<T> c) {
+		FragmentTransaction trans = fragmentManager.beginTransaction();
+		Fragment frag=fragments.get(c.getName());
+		if (frag == null) {
+			try {
+				Class<?> cls = Class.forName(c.getName());
+				frag = (Fragment) cls.newInstance();
+				fragments.put(c.getName(), frag);
+				trans.add(R.id.main_activityLinearLayout, frag);
+			} catch (Exception e) {
+				throw new RuntimeException("反射爆炸");
+			}
+		}
+        hideFragment(trans);
+		trans.show(frag);
+        trans.commit();
+	}
+	
 	public void selectImage(Fragment f) {
         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
@@ -194,9 +200,9 @@ public class MainActivity2 extends Activity {
             rightRelativeLayout.setBackgroundColor(getResources().getColor(android.R.color.background_dark));
         }
         if (getIntent().getBooleanExtra("setTheme", false)) {
-            initSettingsFragment(true);
+            showFragment(SettingsFragment.class);
         } else {
-            initGroupList(true);
+            showFragment(GroupListFragment.class);
             if (MainActivity.sharedPreference.getBoolean("opendraw", true)) {
                 mDrawerLayout.openDrawer(lvDrawer);
             }
@@ -247,46 +253,46 @@ public class MainActivity2 extends Activity {
 				public void onItemClick(AdapterView<?> p1, View p2, int p3, long p4) {
 					switch ((String)p1.getAdapter().getItem(p3)) {
 						case "群消息":
-							initGroupList(true);
+							showFragment(GroupListFragment.class);
 							break;
 						case "状态":
-							initStatusFragment(true);
+							showFragment(StatusFragment.class);
 							break;
 						case "题库":
-							initQuesFragment(true);
+							showFragment(QuestionFragment.class);
 							break;
 						case "群配置":
-							initGroupConfigFragment(true);
+							showFragment(GroupConfigFragment.class);
 							break;
 						case "不回复的QQ":
-							initQQFragment(true);
+							showFragment(QQNotReplyFragment.class);
 							break;
 						case "不回复的字":
-							initWordFragment(true);
+							showFragment(WordNotReplyFragment.class);
 							break;
 						case "飞机佬名单":
-							initPersonFragment(true);
+							showFragment(PersonInfoFragment.class);
 							break;
 						case "Master":
-							initMasterFragment(true);
+							showFragment(MasterFragment.class);
 							break;
 						case "Admin":
-							initAdminFragment(true);
+							showFragment(AdminFragment.class);
 							break;
 						case "自动同意进群":
-							initAllowFragment(true);
+							showFragment(GroupAutoAllowFragment.class);
 							break;
 						case "黑名单QQ":
-							initBlackQQFragment(true);
+							showFragment(BlackQQFragment.class);
 							break;
 						case "黑名单群":
-							initBlackGroupFragment(true);
-							break;	
-						case "群配置":
-							initGroupConfigFragment(true);
+							showFragment(BlackGroupFragment.class);
+							break;
+						case "软件新版本上传":
+							showFragment(UploadApkFragment.class);
 							break;
 						case "设置":
-							initSettingsFragment(true);
+							showFragment(SettingsFragment.class);
 							break;
 						case "退出":
 							if (MainActivity.sharedPreference.getBoolean("exitsettings")) {
@@ -314,194 +320,9 @@ public class MainActivity2 extends Activity {
         lvDrawer = (ListView) findViewById(R.id.navdrawer);
     }
 
-	public void initGroupConfigFragment(boolean showNow) {
-        FragmentTransaction transactionWelcome = getFragmentManager().beginTransaction();
-        if (groupConfigFragment == null) {
-            groupConfigFragment = new GroupConfigFragment();
-            transactionWelcome.add(R.id.main_activityLinearLayout, groupConfigFragment);
-        }
-        hideFragment(transactionWelcome);
-        if (showNow) {
-            transactionWelcome.show(groupConfigFragment);
-        }
-        transactionWelcome.commit();
-    }
-
-    public void initQQFragment(boolean showNow) {
-        FragmentTransaction transactionWelcome = getFragmentManager().beginTransaction();
-        if (qqNotReplyFragment == null) {
-            qqNotReplyFragment = new QQNotReplyFragment();
-            transactionWelcome.add(R.id.main_activityLinearLayout, qqNotReplyFragment);
-        }
-        hideFragment(transactionWelcome);
-        if (showNow) {
-            transactionWelcome.show(qqNotReplyFragment);
-        }
-        transactionWelcome.commit();
-    }
-
-    public void initWordFragment(boolean showNow) {
-        FragmentTransaction transactionWelcome = getFragmentManager().beginTransaction();
-        if (wordNotReplyFragment == null) {
-            wordNotReplyFragment = new WordNotReplyFragment();
-            transactionWelcome.add(R.id.main_activityLinearLayout, wordNotReplyFragment);
-        }
-        hideFragment(transactionWelcome);
-        if (showNow) {
-            transactionWelcome.show(wordNotReplyFragment);
-        }
-        transactionWelcome.commit();
-    }
-
-    public void initPersonFragment(boolean showNow) {
-        FragmentTransaction transactionWelcome = getFragmentManager().beginTransaction();
-        if (personInfoFragment == null) {
-            personInfoFragment = new PersonInfoFragment();
-            transactionWelcome.add(R.id.main_activityLinearLayout, personInfoFragment);
-        }
-        hideFragment(transactionWelcome);
-        if (showNow) {
-            transactionWelcome.show(personInfoFragment);
-        }
-        transactionWelcome.commit();
-    }
-
-    public void initMasterFragment(boolean showNow) {
-        FragmentTransaction transactionWelcome = getFragmentManager().beginTransaction();
-        if (masterFragment == null) {
-            masterFragment = new MasterFragment();
-            transactionWelcome.add(R.id.main_activityLinearLayout, masterFragment);
-        }
-        hideFragment(transactionWelcome);
-        if (showNow) {
-            transactionWelcome.show(masterFragment);
-        }
-        transactionWelcome.commit();
-    }
-
-    public void initAdminFragment(boolean showNow) {
-        FragmentTransaction transactionWelcome = getFragmentManager().beginTransaction();
-        if (adminFragment == null) {
-            adminFragment = new AdminFragment();
-            transactionWelcome.add(R.id.main_activityLinearLayout, adminFragment);
-        }
-        hideFragment(transactionWelcome);
-        if (showNow) {
-            transactionWelcome.show(adminFragment);
-        }
-        transactionWelcome.commit();
-    }
-
-    public void initAllowFragment(boolean showNow) {
-        FragmentTransaction transactionWelcome = getFragmentManager().beginTransaction();
-        if (groupAutoAllowFragment == null) {
-            groupAutoAllowFragment = new GroupAutoAllowFragment();
-            transactionWelcome.add(R.id.main_activityLinearLayout, groupAutoAllowFragment);
-        }
-        hideFragment(transactionWelcome);
-        if (showNow) {
-            transactionWelcome.show(groupAutoAllowFragment);
-        }
-        transactionWelcome.commit();
-    }
-
-    public void initBlackQQFragment(boolean showNow) {
-        FragmentTransaction transactionWelcome = getFragmentManager().beginTransaction();
-        if (blackQQFragment == null) {
-            blackQQFragment = new BlackQQFragment();
-            transactionWelcome.add(R.id.main_activityLinearLayout, blackQQFragment);
-        }
-        hideFragment(transactionWelcome);
-        if (showNow) {
-            transactionWelcome.show(blackQQFragment);
-        }
-        transactionWelcome.commit();
-    }
-
-    public void initBlackGroupFragment(boolean showNow) {
-        FragmentTransaction transactionWelcome = getFragmentManager().beginTransaction();
-        if (blackGroupFragment == null) {
-            blackGroupFragment = new BlackGroupFragment();
-            transactionWelcome.add(R.id.main_activityLinearLayout, blackGroupFragment);
-        }
-        hideFragment(transactionWelcome);
-        if (showNow) {
-            transactionWelcome.show(blackGroupFragment);
-        }
-        transactionWelcome.commit();
-    }
-
-
-    public void initGroupList(boolean showNow) {
-		onBackPressRunable = null;
-        FragmentTransaction transactionWelcome = fragmentManager.beginTransaction();
-        if (messageFragment == null) {
-            messageFragment = new GroupListFragment();
-            transactionWelcome.add(R.id.main_activityLinearLayout, messageFragment);
-        }
-        hideFragment(transactionWelcome);
-        if (showNow) {
-            transactionWelcome.show(messageFragment);
-        }
-        transactionWelcome.commit();
-    }
-
-    private void initStatusFragment(boolean showNow) {
-        FragmentTransaction transactionAboutFragment = fragmentManager.beginTransaction();
-        if (statusFragment == null) {
-            statusFragment = new StatusFragment();
-            transactionAboutFragment.add(R.id.main_activityLinearLayout, statusFragment);
-        }
-        hideFragment(transactionAboutFragment);
-        if (showNow) {
-            transactionAboutFragment.show(statusFragment);
-        }
-        transactionAboutFragment.commit();
-    }
-
-	private void initQuesFragment(boolean showNow) {
-        FragmentTransaction transactionsettings = fragmentManager.beginTransaction();
-        if (quesFragment == null) {
-            quesFragment = new QuestionFragment();
-            transactionsettings.add(R.id.main_activityLinearLayout, quesFragment);
-        }
-        hideFragment(transactionsettings);
-        if (showNow) {
-            transactionsettings.show(quesFragment);
-        }
-        transactionsettings.commit();
-    }
-
-    private void initSettingsFragment(boolean showNow) {
-        FragmentTransaction transactionsettings = fragmentManager.beginTransaction();
-        if (settingsFragment == null) {
-            settingsFragment = new SettingsFragment();
-            transactionsettings.add(R.id.main_activityLinearLayout, settingsFragment);
-        }
-        hideFragment(transactionsettings);
-        if (showNow) {
-            transactionsettings.show(settingsFragment);
-        }
-        transactionsettings.commit();
-    }
-
+	
     public void hideFragment(FragmentTransaction transaction) {
-        Fragment fs[] = {
-			messageFragment,
-			statusFragment,
-			quesFragment,
-			groupConfigFragment,
-			qqNotReplyFragment,
-			wordNotReplyFragment,
-			personInfoFragment,
-			masterFragment,
-			adminFragment,
-			groupAutoAllowFragment,
-			blackQQFragment,
-			blackGroupFragment,
-			settingsFragment
-        };
-        for (Fragment f : fs) {
+        for (Fragment f : fragments.values()) {
             if (f != null) {
                 transaction.hide(f);
             }

@@ -13,6 +13,7 @@ import java.util.*;
 import org.java_websocket.client.*;
 import org.java_websocket.exceptions.*;
 import org.java_websocket.handshake.*;
+import com.meng.botconnect.fragment.*;
 
 
 public class CoolQ extends WebSocketClient {
@@ -163,15 +164,15 @@ public class CoolQ extends WebSocketClient {
 					MainActivity2.instance.blackQQAdapter = new QQAccountAdapter(MainActivity2.instance, rcfgb.blackListQQ);
 					MainActivity2.instance.blackGroupAdapter = new QQAccountAdapter(MainActivity2.instance, rcfgb.blackListGroup, true);
 
-					MainActivity2.instance.groupConfigFragment.mListView.setAdapter(MainActivity2.instance.groupConfigAdapter);
-					MainActivity2.instance.qqNotReplyFragment.mListView.setAdapter(MainActivity2.instance.qqNotReplyAdapter);
-					MainActivity2.instance.wordNotReplyFragment.mListView.setAdapter(MainActivity2.instance.wordNotReplyAdapter);
-					MainActivity2.instance.personInfoFragment.mListView.setAdapter(MainActivity2.instance.personInfoAdapter);
-					MainActivity2.instance.masterFragment.mListView.setAdapter(MainActivity2.instance.masterAdapter);
-					MainActivity2.instance.adminFragment.mListView.setAdapter(MainActivity2.instance.adminAdapter);
-					MainActivity2.instance.groupAutoAllowFragment.mListView.setAdapter(MainActivity2.instance.groupAutoAllowAdapter);
-					MainActivity2.instance.blackQQFragment.mListView.setAdapter(MainActivity2.instance.blackQQAdapter);
-					MainActivity2.instance.blackGroupFragment.mListView.setAdapter(MainActivity2.instance.blackGroupAdapter);
+					MainActivity2.instance.getFragment(GroupConfigFragment.class).mListView.setAdapter(MainActivity2.instance.groupConfigAdapter);
+					MainActivity2.instance.getFragment(QQNotReplyFragment.class).mListView.setAdapter(MainActivity2.instance.qqNotReplyAdapter);
+					MainActivity2.instance.getFragment(WordNotReplyFragment.class).mListView.setAdapter(MainActivity2.instance.wordNotReplyAdapter);
+					MainActivity2.instance.getFragment(PersonInfoFragment.class).mListView.setAdapter(MainActivity2.instance.personInfoAdapter);
+					MainActivity2.instance.getFragment(MasterFragment.class).mListView.setAdapter(MainActivity2.instance.masterAdapter);
+					MainActivity2.instance.getFragment(AdminFragment.class).mListView.setAdapter(MainActivity2.instance.adminAdapter);
+					MainActivity2.instance.getFragment(GroupAutoAllowFragment.class).mListView.setAdapter(MainActivity2.instance.groupAutoAllowAdapter);
+					MainActivity2.instance.getFragment(BlackQQFragment.class).mListView.setAdapter(MainActivity2.instance.blackQQAdapter);
+					MainActivity2.instance.getFragment(BlackGroupFragment.class).mListView.setAdapter(MainActivity2.instance.blackGroupAdapter);
 
 					break;
 				case BotDataPack.onPerSecMsgInfo:
@@ -181,13 +182,13 @@ public class CoolQ extends WebSocketClient {
 					LogTool.t(MainActivity2.instance, rec.readString());
 					break;
 				case BotDataPack.opAllQuestion:
-					MainActivity2.instance.quesFragment.alAllQa.clear();
+					MainActivity2.instance.getFragment(QuestionFragment.class).alAllQa.clear();
 					readQAs(rec);
 					MainActivity2.instance.runOnUiThread(new Runnable(){
 
 							@Override
 							public void run() {
-								MainActivity2.instance.quesFragment.quesAdapter.notifyDataSetChanged();
+								MainActivity2.instance.getFragment(QuestionFragment.class).quesAdapter.notifyDataSetChanged();
 							}
 						});
 					break;
@@ -206,7 +207,6 @@ public class CoolQ extends WebSocketClient {
 						}).start();
 					break;
 				case BotDataPack.opEnableFunction:
-					LogTool.t(MainActivity2.instance, "接收修改配置");
 					int f;
 					boolean e;
 					MainActivity2.instance.botData.ranConfig.getGroupConfig(rec.readLong()).setFunctionEnabled(f = rec.readInt(), e = (rec.readInt() == 1));
@@ -526,7 +526,9 @@ public class CoolQ extends WebSocketClient {
 							}
 						});
 					break;	
-
+				case BotDataPack.opUploadApk:
+					LogTool.t(MainActivity2.instance, "上传成功");
+					break;
 					/*case BotDataPack.getCqImgFile:
 					 File f=new File(MainActivity2.mainFolder + "/cqimg/" + rec.readString());
 					 rec.readFile(f);
@@ -706,7 +708,7 @@ public class CoolQ extends WebSocketClient {
 				qa.a.add(sdp.readString());
 			}
 			qa.r = sdp.readString();
-			MainActivity2.instance.quesFragment.alAllQa.add(qa);
+			MainActivity2.instance.getFragment(QuestionFragment.class).alAllQa.add(qa);
 		}
 	}
 
